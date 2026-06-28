@@ -1,0 +1,85 @@
+{% extends 'turnuva/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card shadow mt-3 mb-5">
+            <div class="card-header bg-dark text-white fw-bold">
+                {{ brans }} Kayıt ve Güncelleme Formu
+            </div>
+            <div class="card-body bg-light">
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3 text-primary border-bottom pb-2">1. Takım Bilgileri</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            {{ form.takim_adi.label_tag }}
+                            {{ form.takim_adi }}
+                            <div class="text-danger small">{{ form.takim_adi.errors }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.telefon.label_tag }}
+                            {{ form.telefon }}
+                            <div class="text-danger small">{{ form.telefon.errors }}</div>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 text-primary border-bottom pb-2">2. Oyuncu Bilgileri</h5>
+                    {{ formset.management_form }}
+                    
+                    <div class="row">
+                        {% for oyuncu_form in formset %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-secondary h-100">
+                                    <div class="card-header bg-secondary text-white">
+                                        Oyuncu {{ forloop.counter }}
+                                    </div>
+                                    <div class="card-body">
+                                        {% for hidden in oyuncu_form.hidden_fields %}
+                                            {{ hidden }}
+                                        {% endfor %}
+                                        
+                                        <div class="mb-2">
+                                            {{ oyuncu_form.ad.label_tag }}
+                                            {{ oyuncu_form.ad }}
+                                            <div class="text-danger small">{{ oyuncu_form.ad.errors }}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            {{ oyuncu_form.soyad.label_tag }}
+                                            {{ oyuncu_form.soyad }}
+                                            <div class="text-danger small">{{ oyuncu_form.soyad.errors }}</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            {{ oyuncu_form.tc_no.label_tag }}
+                                            {{ oyuncu_form.tc_no }}
+                                            <div class="text-danger fw-bold small">{{ oyuncu_form.tc_no.errors }}</div>
+                                            <div class="text-danger fw-bold small">{{ oyuncu_form.non_field_errors }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Bilgileri Kaydet / Güncelle</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

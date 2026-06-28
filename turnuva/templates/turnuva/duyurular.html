@@ -1,0 +1,24 @@
+{% extends 'turnuva/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Tüm Duyurular</h2>
+
+<div class="row">
+    {% for duyuru in duyurular %}
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100 border-start border-4 border-primary">
+            <div class="card-body">
+                <h5 class="card-title">{{ duyuru.baslik }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ duyuru.yayinlanma_tarihi|date:"d M Y H:i" }}</h6>
+                <hr>
+                <p class="card-text">{{ duyuru.icerik }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">Şu anda aktif bir duyuru bulunmamaktadır.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

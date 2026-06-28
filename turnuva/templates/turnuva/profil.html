@@ -1,0 +1,45 @@
+{% extends 'turnuva/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Kaptan Paneli</h2>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow border-warning">
+            <div class="card-header bg-warning text-dark fw-bold">
+                🏀 Basketbol Takımı Durumu
+            </div>
+            <div class="card-body">
+                {% if basketbol_takimi %}
+                    <h5 class="card-title text-success">Kayıtlı Takım: {{ basketbol_takimi.takim_adi }}</h5>
+                    <p>Oyuncu formlarını güncellemek için aşağıdaki butonu kullanabilirsiniz.</p>
+                    <<a href="{% url 'basketbol_yonetim' %}" class="btn btn-outline-warning">Takımı Güncelle</a>
+                {% else %}
+                    <h5 class="card-title text-danger">Takımınız Yok</h5>
+                    <p>Henüz bir basketbol takımı oluşturmadınız (4 Oyuncu).</p>
+                    <a href="{% url 'basketbol_yonetim' %}" class="btn btn-warning">Basketbol Takımı Oluştur</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow border-success">
+            <div class="card-header bg-success text-white fw-bold">
+                ⚽ Futbol Takımı Durumu
+            </div>
+            <div class="card-body">
+                {% if futbol_takimi %}
+                    <h5 class="card-title text-success">Kayıtlı Takım: {{ futbol_takimi.takim_adi }}</h5>
+                    <p>Oyuncu formlarını güncellemek için aşağıdaki butonu kullanabilirsiniz.</p>
+                    <a href="{% url 'futbol_yonetim' %}" class="btn btn-outline-success">Takımı Güncelle</a>
+                {% else %}
+                    <h5 class="card-title text-danger">Takımınız Yok</h5>
+                    <p>Henüz bir futbol takımı oluşturmadınız (8 Oyuncu).</p>
+                    <a href="{% url 'futbol_yonetim' %}" class="btn btn-success">Futbol Takımı Oluştur</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

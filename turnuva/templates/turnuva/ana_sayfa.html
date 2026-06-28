@@ -1,0 +1,68 @@
+{% extends 'turnuva/base.html' %}
+
+{% block content %}
+{% if son_duyuru %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="duyuruToast" class="toast shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-warning text-dark">
+      <strong class="me-auto">📢 Yeni Duyuru: {{ son_duyuru.baslik }}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body bg-white text-dark" onclick="window.location.href='{% url 'duyurular' %}'" style="cursor: pointer;">
+      Detayları görmek için buraya tıklayın.
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold">Büyük Turnuvaya Kalan Süre</h1>
+    
+    <div id="sayac" class="display-1 text-danger my-4 fw-bold">Yükleniyor...</div>
+    
+    <h3 class="text-muted">Tarih: 15 Ağustos 2026 - Saat: 10:00</h3>
+    <p class="lead">Takımını kur, kayıt ol ve şampiyonluk için mücadele et!</p>
+    
+    <div class="mt-5">
+        <h2 class="mb-3">Turnuva Alanı Konumu</h2>
+        <div class="ratio ratio-16x9 shadow rounded overflow-hidden">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.650499611684!2d28.97699661541384!3d41.01166697929949!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cab9ec5fa54041%3A0x6b8bc134fbf147d3!2sEmin%C3%B6n%C3%BC%20Meydan%C4%B1!5e0!3m2!1str!2str!4v1680000000000!5m2!1str!2str" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 1. Popup'ı Ekranda Gösterme
+    {% if son_duyuru %}
+    document.addEventListener('DOMContentLoaded', function () {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl, {autohide: false}) // Otomatik kapanmasın ki kullanıcı görsün
+        })
+        toastList.forEach(toast => toast.show())
+    });
+    {% endif %}
+
+    // 2. Canlı Geri Sayım Sayacı İşlemi
+    var turnuvaTarihi = new Date("Aug 15, 2026 10:00:00").getTime();
+
+    var x = setInterval(function() {
+        var simdi = new Date().getTime();
+        var fark = turnuvaTarihi - simdi;
+
+        var gun = Math.floor(fark / (1000 * 60 * 60 * 24));
+        var saat = Math.floor((fark % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var dakika = Math.floor((fark % (1000 * 60 * 60)) / (1000 * 60));
+        var saniye = Math.floor((fark % (1000 * 60)) / 1000);
+
+        document.getElementById("sayac").innerHTML = gun + "g " + saat + "s " + dakika + "d " + saniye + "sn ";
+
+        if (fark < 0) {
+            clearInterval(x);
+            document.getElementById("sayac").innerHTML = "TURNUVA BAŞLADI!";
+        }
+    }, 1000);
+</script>
+{% endblock %}

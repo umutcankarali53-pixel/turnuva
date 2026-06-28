@@ -1,0 +1,45 @@
+{% extends 'turnuva/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow border-primary">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0">🏆 Son Bir Adım!</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted text-center mb-4">
+                    Google hesabınızla başarıyla bağlantı kuruldu. Turnuva kayıt sistemine girişinizi tamamlamak için lütfen aşağıdaki bilgileri onaylayın.
+                </p>
+                
+                <form class="socialaccount_signup" method="POST" action="{% url 'socialaccount_signup' %}">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary">
+                                {% if field.name == 'username' %}Kullanıcı Adı{% elif field.name == 'email' %}E-posta Adresi{% else %}{{ field.label }}{% endif %}
+                            </label>
+                            <input type="text" 
+                                   name="{{ field.name }}" 
+                                   id="{{ field.id_for_label }}" 
+                                   class="form-control form-control-lg" 
+                                   value="{{ field.value|default_if_none:'' }}"
+                                   required>
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1 fw-bold">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg fw-bold py-2">
+                            Kaydı Tamamla ve Giriş Yap
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
