@@ -68,7 +68,7 @@ def export_futbol_excel():
 
 def export_tum_excel():
     """Tüm takımları Excel olarak export et"""
-    from .models import BasketbolTakimi, FutbolTakimi
+    from ..models import BasketbolTakimi, FutbolTakimi
     
     bb, fb = [], []
     for t in BasketbolTakimi.objects.select_related('kaptan').prefetch_related('oyuncular'):

@@ -25,3 +25,25 @@ urlpatterns = [
     path('', include('turnuva.urls')),
     path('accounts/', include('allauth.urls')),
 ]
+
+# Şifre sıfırlama URL'leri
+from django.contrib.auth import views as auth_views
+
+urlpatterns += [
+    path('sifre-sifirla/', auth_views.PasswordResetView.as_view(
+        template_name='turnuva/sifre_sifirla.html',
+        email_template_name='turnuva/sifre_sifirla_email.html',
+        subject_template_name='turnuva/sifre_sifirla_konu.txt',
+        success_url='/sifre-sifirla/basari/'
+    ), name='sifre_sifirla'),
+    path('sifre-sifirla/basari/', auth_views.PasswordResetDoneView.as_view(
+        template_name='turnuva/sifre_sifirla_basari.html'
+    ), name='sifre_sifirla_basari'),
+    path('sifre-sifirla/onay/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='turnuva/sifre_sifirla_onay.html',
+        success_url='/sifre-sifirla/tamam/'
+    ), name='sifre_sifirla_onay'),
+    path('sifre-sifirla/tamam/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='turnuva/sifre_sifirla_tamam.html'
+    ), name='sifre_sifirla_tamam'),
+]

@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() in ('1', 'true', 'yes')
+DEBUG = False
 
 ALLOWED_HOSTS = _env_list('ALLOWED_HOSTS', '127.0.0.1,localhost')
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -199,5 +199,10 @@ ACCOUNT_SIGNUP_FIELDS = ['username*', 'email*', 'password1*', 'password2*']
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = False      # Bilgiler benzersizse bile onay ekranını göster
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # Zorunlu e-posta doğrulama
+
+# Password Reset Ayarları
+ACCOUNT_PASSWORD_RESET_TIMEOUT = 86400  # 24 saat
+ACCOUNT_PASSWORD_CHANGE_TIMEOUT = 86400  # 24 saat
+ACCOUNT_PASSWORD_RESET_URL = 'sifre_sifirla'  # Şifre sıfırlama URL'i
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
