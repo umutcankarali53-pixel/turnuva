@@ -1,12 +1,72 @@
 <aside class="admin-sidebar" id="adminSidebar">
-    <a href="{% url 'admin_dashboard' %}" class="sidebar-brand"><i class="bi bi-trophy-fill text-warning"></i><span>Yonetim Paneli</span></a>
+    <a href="{% url 'admin_dashboard' %}" class="sidebar-brand">
+        <i class="bi bi-trophy-fill text-warning"></i>
+        <span>Yonetim Paneli</span>
+    </a>
     <ul class="sidebar-nav">
-        <li><a href="{% url 'admin_dashboard' %}" class="{% if active_page == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-        <li><a href="{% url 'admin_basketbol_listesi' %}" class="{% if active_page == 'basketbol' %}active{% endif %}"><i class="bi bi-dribbble"></i> Basketbol</a></li>
-        <li><a href="{% url 'admin_futbol_listesi' %}" class="{% if active_page == 'futbol' %}active{% endif %}"><i class="bi bi-circle"></i> Futbol</a></li>
-        <li><a href="{% url 'admin_duyurular' %}" class="{% if active_page == 'duyurular' %}active{% endif %}"><i class="bi bi-megaphone"></i> Duyurular</a></li>
-        <li><a href="{% url 'admin_kullanicilar' %}" class="{% if active_page == 'kullanicilar' %}active{% endif %}"><i class="bi bi-people"></i> Kullanicilar</a></li>
-        <li><a href="{% url 'admin_export_tum' %}"><i class="bi bi-download"></i> Excel Indir</a></li>
+        <li class="nav-section">
+            <small class="nav-section-title">ANA SAYFA</small>
+        </li>
+        <li>
+            <a href="{% url 'admin_dashboard' %}" class="{% if active_page == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </li>
+        
+        <li class="nav-section">
+            <small class="nav-section-title">TURNUVALAR</small>
+        </li>
+        <li>
+            <a href="{% url 'admin_fikstur' %}" class="{% if active_page == 'fikstur' %}active{% endif %}">
+                <i class="bi bi-calendar-event"></i> Fikstür Yönetimi
+            </a>
+        </li>
+        
+        <li class="nav-section">
+            <small class="nav-section-title">TAKIMLAR</small>
+        </li>
+        <li>
+            <a href="{% url 'admin_basketbol_listesi' %}" class="{% if active_page == 'basketbol' %}active{% endif %}">
+                <i class="bi bi-dribbble"></i> Basketbol
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_futbol_listesi' %}" class="{% if active_page == 'futbol' %}active{% endif %}">
+                <i class="bi bi-circle-fill"></i> Futbol
+            </a>
+        </li>
+        
+        <li class="nav-section">
+            <small class="nav-section-title">AYARLAR</small>
+        </li>
+        <li>
+            <a href="{% url 'admin_duyurular' %}" class="{% if active_page == 'duyurular' %}active{% endif %}">
+                <i class="bi bi-megaphone"></i> Duyurular
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_site_ayarlari' %}" class="{% if active_page == 'ayarlar' %}active{% endif %}">
+                <i class="bi bi-gear"></i> Site Ayarları
+            </a>
+        </li>
+        
+        <li class="nav-section">
+            <small class="nav-section-title">DIĞER</small>
+        </li>
+        <li>
+            <a href="{% url 'admin_kullanicilar' %}" class="{% if active_page == 'kullanicilar' %}active{% endif %}">
+                <i class="bi bi-people"></i> Kullanıcılar
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_export_tum' %}">
+                <i class="bi bi-download"></i> Excel İndir
+            </a>
+        </li>
     </ul>
-    <div class="sidebar-footer"><a href="{% url 'ana_sayfa' %}"><i class="bi bi-arrow-left me-1"></i> Siteye Don</a></div>
+    <div class="sidebar-footer">
+        <a href="{% url 'ana_sayfa' %}">
+            <i class="bi bi-arrow-left me-1"></i> Siteye Dön
+        </a>
+    </div>
 </aside>

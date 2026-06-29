@@ -1,1 +1,452 @@
-:root{--admin-primary:#0f2744;--admin-accent:#c9a227;--admin-bg:#f0f2f5;--admin-sidebar-w:260px}body.admin-body{font-family:'DM Sans',sans-serif;background:var(--admin-bg);margin:0}.admin-sidebar{position:fixed;top:0;left:0;width:var(--admin-sidebar-w);height:100vh;background:#0f2744;color:#fff;display:flex;flex-direction:column}.sidebar-brand{display:flex;gap:.75rem;padding:1.25rem 1rem;color:#fff;text-decoration:none;font-weight:700}.sidebar-nav{list-style:none;padding:1rem .75rem;flex:1}.sidebar-nav a{display:flex;gap:.65rem;padding:.65rem .875rem;border-radius:8px;color:rgba(255,255,255,.75);text-decoration:none}.sidebar-nav a.active,.sidebar-nav a:hover{background:rgba(255,255,255,.1);color:#fff}.admin-main{margin-left:var(--admin-sidebar-w)}.admin-topbar{background:#fff;padding:.875rem 1.5rem;display:flex;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}.topbar-title{flex:1;font-weight:700;color:var(--admin-primary)}.admin-content{padding:1.5rem}.admin-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}.admin-card-header{padding:1rem 1.25rem;border-bottom:1px solid #eee}.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}.kpi-card{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}.kpi-value{font-size:1.75rem;font-weight:800;color:var(--admin-primary)}.btn-accent{background:var(--admin-accent);border-color:var(--admin-accent);color:#fff}.chart-bars{display:flex;align-items:flex-end;gap:.5rem;height:120px}.chart-bar-group{flex:1;text-align:center}.chart-bar-wrap{display:flex;gap:3px;justify-content:center;align-items:flex-end;height:90px}.chart-bar{width:14px;border-radius:4px 4px 0 0;min-height:4px}.chart-bar.bb{background:#fd7e14}.chart-bar.fb{background:#198754}.summary-list{list-style:none;padding:0;margin:0}.summary-list li{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #f0f0f0}@media(max-width:991px){.admin-sidebar{transform:translateX(-100%)}.admin-sidebar.open{transform:translateX(0)}.admin-main{margin-left:0}}
+/* Admin Panel Modern CSS - Gri Tonlar */
+
+:root {
+    --admin-primary: #2c3e50;
+    --admin-secondary: #34495e;
+    --admin-accent: #3498db;
+    --admin-bg: #ecf0f1;
+    --admin-sidebar-w: 260px;
+    --admin-success: #27ae60;
+    --admin-warning: #f39c12;
+    --admin-danger: #e74c3c;
+    --admin-info: #16a085;
+    --admin-light: #95a5a6;
+    --admin-dark: #2c3e50;
+}
+
+body.admin-body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--admin-bg);
+    margin: 0;
+}
+
+/* Sidebar - Gri Tonlar */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--admin-sidebar-w);
+    height: 100vh;
+    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    z-index: 1000;
+}
+
+.sidebar-brand {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.5rem 1rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.1);
+}
+
+.sidebar-brand i {
+    font-size: 1.5rem;
+    color: #3498db;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 1rem 0.75rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.nav-section {
+    padding: 0.75rem 0.875rem 0.25rem;
+}
+
+.nav-section-title {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    gap: 0.65rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    margin-bottom: 2px;
+}
+
+.sidebar-nav a:hover {
+    background: rgba(52, 152, 219, 0.2);
+    color: #fff;
+    transform: translateX(4px);
+}
+
+.sidebar-nav a.active {
+    background: var(--admin-accent);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.1);
+}
+
+.sidebar-footer a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.sidebar-footer a:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+/* Main Content */
+.admin-main {
+    margin-left: var(--admin-sidebar-w);
+    min-height: 100vh;
+}
+
+.admin-topbar {
+    background: #fff;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    border-bottom: 2px solid #bdc3c7;
+}
+
+.topbar-title {
+    flex: 1;
+    font-weight: 700;
+    color: var(--admin-dark);
+    font-size: 1.25rem;
+}
+
+.topbar-user {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.admin-content {
+    padding: 1.5rem;
+}
+
+/* Cards - Gri Tonlar */
+.admin-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+    border: 1px solid #bdc3c7;
+}
+
+.admin-card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #ecf0f1;
+    background: #f8f9fa;
+}
+
+/* KPI Cards */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid var(--admin-accent);
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--admin-dark);
+}
+
+/* Buttons */
+.btn-accent {
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
+    color: #fff;
+}
+
+.btn-accent:hover {
+    background: #2980b9;
+    border-color: #2980b9;
+    color: #fff;
+}
+
+/* Tables */
+.table-hover tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.form-control {
+    border: 1px solid #bdc3c7;
+    background-color: #fff;
+}
+
+.form-control:disabled {
+    background-color: #ecf0f1;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+    }
+    
+    .admin-sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .admin-main {
+        margin-left: 0;
+    }
+    
+    .kpi-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    color: var(--admin-dark);
+    text-decoration: none;
+    padding: 0.5rem;
+}
+
+/* Chart Bars */
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    height: 120px;
+    padding: 1rem 0;
+}
+
+.chart-bar-group {
+    flex: 1;
+    text-align: center;
+}
+
+.chart-bar-wrap {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    align-items: flex-end;
+    height: 90px;
+}
+
+.chart-bar {
+    width: 14px;
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 0.3s ease;
+}
+
+.chart-bar.bb {
+    background: #f39c12;
+}
+
+.chart-bar.fb {
+    background: #27ae60;
+}
+
+/* Summary List */
+.summary-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.summary-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.summary-list li:last-child {
+    border-bottom: none;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Card Hover Effects */
+.card {
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+/* Icon Colors */
+.text-primary-custom {
+    color: var(--admin-primary);
+}
+
+.text-accent {
+    color: var(--admin-accent);
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: var(--admin-success);
+}
+
+.alert-warning {
+    border-left-color: var(--admin-warning);
+}
+
+.alert-danger {
+    border-left-color: var(--admin-danger);
+}
+
+.alert-info {
+    border-left-color: var(--admin-info);
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Table Styles */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #ecf0f1;
+}
+
+/* Form Styles */
+.form-label {
+    font-weight: 600;
+    color: var(--admin-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-select {
+    border: 1px solid #bdc3c7;
+    background-color: #fff;
+}
+
+/* Card Header */
+.card-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+    gap: 0.25rem;
+}
+
+.page-link {
+    border: 1px solid #bdc3c7;
+    color: var(--admin-dark);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+.page-link:hover {
+    background: var(--admin-accent);
+    color: #fff;
+    border-color: var(--admin-accent);
+}
+
+.page-item.active .page-link {
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
+}

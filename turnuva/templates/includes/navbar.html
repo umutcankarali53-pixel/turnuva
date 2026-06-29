@@ -11,7 +11,6 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'ana_sayfa' %}">Ana Sayfa</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'duyurular' %}">Duyurular</a></li>
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'profil' %}">Profilim</a></li>
                 {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">Yonetim</a></li>{% endif %}
                 <li class="nav-item"><a class="btn btn-sm btn-outline-light ms-lg-2" href="{% url 'cikis_yap' %}">Cikis</a></li>
                 {% else %}

@@ -1,0 +1,85 @@
+{% extends 'turnuva/base.html' %}
+{% load static %}
+
+{% block title %}Basketbol Takım Yönetimi{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="bi bi-dribbble"></i> Basketbol Takımım
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if takim %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> Takımınız oluşturuldu. Bilgilerinizi aşağıdan düzenleyebilirsiniz.
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" id="takimForm">
+                        {% csrf_token %}
+                        
+                        <h5 class="form-section-title">
+                            <i class="bi bi-people me-2"></i>Takım Bilgileri
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="takim_adi" class="form-label">Takım Adı</label>
+                                <input type="text" class="form-control" id="takim_adi" name="takim_adi" 
+                                       value="{% if takim %}{{ takim.takim_adi }}{% endif %}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="telefon" class="form-label">Telefon</label>
+                                <input type="tel" class="form-control" id="telefon" name="telefon" 
+                                       value="{% if takim %}{{ takim.telefon }}{% endif %}" required>
+                            </div>
+                        </div>
+
+                        <h5 class="form-section-title">
+                            <i class="bi bi-person-lines-fill me-2"></i>Oyuncular (4 Kişi)
+                        </h5>
+                        <div class="row g-3">
+                            {% for i in "1234" %}
+                            <div class="col-md-6">
+                                <div class="player-card">
+                                    <div class="player-card-header">
+                                        Oyuncu {{ i }}
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-2">
+                                            <label class="form-label">Ad</label>
+                                            <input type="text" class="form-control" name="oyuncu{{ i }}_ad" 
+                                                   value="{% if takim and takim.oyuncular.all|length >= forloop.counter %}{{ takim.oyuncular.all|slice:forloop.counter0|first.ad }}{% endif %}">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">Soyad</label>
+                                            <input type="text" class="form-control" name="oyuncu{{ i }}_soyad"
+                                                   value="{% if takim and takim.oyuncular.all|length >= forloop.counter %}{{ takim.oyuncular.all|slice:forloop.counter0|first.soyad }}{% endif %}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">TC No</label>
+                                            <input type="text" class="form-control" name="oyuncu{{ i }}_tc"
+                                                   value="{% if takim and takim.oyuncular.all|length >= forloop.counter %}{{ takim.oyuncular.all|slice:forloop.counter0|first.get_tc_no }}{% endif %}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-warning btn-lg py-3">
+                                <i class="bi bi-check-circle me-2"></i>Bilgileri Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

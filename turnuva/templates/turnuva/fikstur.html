@@ -1,0 +1,146 @@
+{% extends 'turnuva/base.html' %}
+{% load static %}
+
+{% block title %}{{ site.site_adi }} - Fikstür{% endblock %}
+
+{% block meta_description %}
+Turnuva maç eşleşmeleri ve fikstür. Tüm takımların karşılaşma programını buradan takip edebilirsiniz.
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="bi bi-calendar-event"></i> Turnuva Fikstürü
+            </h1>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if turnuvalar %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-trophy"></i> Turnuva Seçin
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{% url 'fikstur' %}">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <select name="turnuva" class="form-select" onchange="this.form.submit()">
+                                        <option value="">-- Turnuva Seçin --</option>
+                                        {% for turnuva in turnuvalar %}
+                                            <option value="{{ turnuva.pk }}" {% if secili_turnuva and secili_turnuva.pk == turnuva.pk %}selected{% endif %}>
+                                                {{ turnuva.ad }} ({{ turnuva.get_brans_display }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{% url 'fikstur' %}" class="btn btn-secondary w-100">
+                                        <i class="bi bi-arrow-clockwise"></i> Sıfırla
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {% if secili_turnuva and maclar %}
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-calendar3"></i> {{ secili_turnuva.ad }} - Maç Listesi
+                            </h5>
+                            <button onclick="window.print()" class="btn btn-light btn-sm">
+                                <i class="bi bi-printer"></i> Yazdır / PDF
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th style="width: 10%">Tur</th>
+                                            <th style="width: 35%">Takım 1</th>
+                                            <th style="width: 10%" class="text-center">Skor</th>
+                                            <th style="width: 35%">Takım 2</th>
+                                            <th style="width: 10%" class="text-center">Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for mac in maclar %}
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary rounded-pill">
+                                                        {{ mac.tur }}. Tur
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <strong>{{ mac.takim1_adi }}</strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    {% if mac.durum == 'oynandi' %}
+                                                        <span class="fw-bold">
+                                                            {{ mac.takim1_skor }} - {{ mac.takim2_skor }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <strong>{{ mac.takim2_adi }}</strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    {% if mac.durum == 'bekliyor' %}
+                                                        <span class="badge bg-warning text-dark">Bekliyor</span>
+                                                    {% elif mac.durum == 'oynandi' %}
+                                                        <span class="badge bg-success">Oynandı</span>
+                                                    {% elif mac.durum == 'iptal' %}
+                                                        <span class="badge bg-danger">İptal</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% elif secili_turnuva %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Seçilen turnuva için henüz maç eşleşmesi oluşturulmamış.
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Henüz aktif bir turnuva bulunmuyor.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .navbar, .footer, .btn, form, .card-header {
+            display: none !important;
+        }
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        body {
+            padding: 0 !important;
+        }
+    }
+</style>
+{% endblock %}

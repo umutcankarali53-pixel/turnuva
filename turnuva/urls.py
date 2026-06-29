@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.public import ana_sayfa, duyurular_sayfasi, kayit_ol, giris_yap, cikis_yap
+from .views.public import ana_sayfa, duyurular_sayfasi, kayit_ol, giris_yap, cikis_yap, fikstur_sayfasi
 from .views.user import profil, basketbol_takim_yonetimi, futbol_takim_yonetimi
 from .views.admin import (
     admin_dashboard, admin_basketbol_listesi, admin_futbol_listesi,
@@ -7,7 +7,8 @@ from .views.admin import (
     admin_duyurular, admin_duyuru_duzenle, admin_duyuru_sil, admin_duyuru_toggle,
     admin_kullanicilar, admin_export_basketbol, admin_export_futbol,
     admin_export_tum, admin_export_kullanicilar, excel_indir_basketbol, excel_indir_futbol,
-    ozel_yonetim_paneli
+    ozel_yonetim_paneli, admin_site_ayarlari, admin_fikstur, admin_eslesme_olustur,
+    admin_turnuva_ekle, admin_turnuva_sil, admin_mac_duzenle, admin_mac_sil
 )
 
 urlpatterns = [
@@ -19,6 +20,7 @@ urlpatterns = [
     path('profil/', profil, name='profil'),
     path('basketbol-yonetim/', basketbol_takim_yonetimi, name='basketbol_yonetim'),
     path('futbol-yonetim/', futbol_takim_yonetimi, name='futbol_yonetim'),
+    path('fikstur/', fikstur_sayfasi, name='fikstur'),
     path('yonetim/', admin_dashboard, name='admin_dashboard'),
     path('yonetim/basketbol/', admin_basketbol_listesi, name='admin_basketbol_listesi'),
     path('yonetim/basketbol/<int:pk>/', admin_basketbol_detay, name='admin_basketbol_detay'),
@@ -38,4 +40,11 @@ urlpatterns = [
     path('yonetim/eski/', ozel_yonetim_paneli, name='ozel_yonetim'),
     path('yonetim/excel-basketbol/eski/', excel_indir_basketbol, name='excel_indir_basketbol'),
     path('yonetim/excel-futbol/eski/', excel_indir_futbol, name='excel_indir_futbol'),
+    path('yonetim/ayarlar/', admin_site_ayarlari, name='admin_site_ayarlari'),
+    path('yonetim/fikstur/', admin_fikstur, name='admin_fikstur'),
+    path('yonetim/fikstur/eslesme-olustur/', admin_eslesme_olustur, name='admin_eslesme_olustur'),
+    path('yonetim/turnuva/ekle/', admin_turnuva_ekle, name='admin_turnuva_ekle'),
+    path('yonetim/turnuva/<int:pk>/sil/', admin_turnuva_sil, name='admin_turnuva_sil'),
+    path('yonetim/mac/<int:pk>/duzenle/', admin_mac_duzenle, name='admin_mac_duzenle'),
+    path('yonetim/mac/<int:pk>/sil/', admin_mac_sil, name='admin_mac_sil'),
 ]

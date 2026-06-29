@@ -1,1 +1,227 @@
-{% extends 'admin/base_admin.html' %}{% block title %}Dashboard{% endblock %}{% block page_title %}Dashboard{% endblock %}{% block content %}<div class='kpi-grid'><div class='kpi-card'><div class='kpi-value'>{{ toplam_kullanici }}</div><div>Kullanici</div></div><div class='kpi-card'><div class='kpi-value'>{{ basketbol_sayisi }}</div><div>Basketbol</div></div><div class='kpi-card'><div class='kpi-value'>{{ futbol_sayisi }}</div><div>Futbol</div></div><div class='kpi-card'><div class='kpi-value'>{{ toplam_takim }}</div><div>Takim</div></div></div><div class='admin-card mt-3'><div class='admin-card-header'><h5>Son Kayitlar</h5></div><div class='p-0'><table class='table mb-0'><thead><tr><th>Brans</th><th>Takim</th><th>Kaptan</th></tr></thead><tbody>{% for k in son_kayitlar %}<tr><td>{{ k.brans }}</td><td>{{ k.takim }}</td><td>{{ k.kaptan }}</td></tr>{% empty %}<tr><td colspan='3'>Yok</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- KPI Cards Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Toplam Kullanıcı</p>
+                        <h3 class="mb-0 fw-bold">{{ toplam_kullanici }}</h3>
+                    </div>
+                    <div class="bg-primary bg-gradient text-white rounded-circle p-3">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Toplam Takım</p>
+                        <h3 class="mb-0 fw-bold">{{ toplam_takim }}</h3>
+                        <small class="text-muted">BB: {{ basketbol_sayisi }} | FB: {{ futbol_sayisi }}</small>
+                    </div>
+                    <div class="bg-success bg-gradient text-white rounded-circle p-3">
+                        <i class="bi bi-trophy-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Toplam Oyuncu</p>
+                        <h3 class="mb-0 fw-bold">{{ toplam_oyuncu }}</h3>
+                        <small class="text-muted">BB: {{ basketbol_oyuncu }} | FB: {{ futbol_oyuncu }}</small>
+                    </div>
+                    <div class="bg-info bg-gradient text-white rounded-circle p-3">
+                        <i class="bi bi-person-badge-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Aktif Duyuru</p>
+                        <h3 class="mb-0 fw-bold">{{ aktif_duyuru }}</h3>
+                        <small class="text-muted">Toplam: {{ toplam_duyuru }}</small>
+                    </div>
+                    <div class="bg-warning bg-gradient text-white rounded-circle p-3">
+                        <i class="bi bi-megaphone-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page View Analytics -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up text-primary"></i> Sayfa Görüntüleme İstatistikleri
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="mb-0 fw-bold text-primary">{{ sayfa_istatistikleri.toplam_goruntuleme }}</h4>
+                            <small class="text-muted">Toplam</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="mb-0 fw-bold text-success">{{ sayfa_istatistikleri.son_7_gun_goruntuleme }}</h4>
+                            <small class="text-muted">Son 7 Gün</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <h4 class="mb-0 fw-bold text-info">{{ sayfa_istatistikleri.son_30_gun_goruntuleme }}</h4>
+                            <small class="text-muted">Son 30 Gün</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="mt-3 mb-2">Son 7 Günlük Görüntülemeler</h6>
+                <div class="d-flex justify-content-between align-items-end" style="height: 150px;">
+                    {% for veri in sayfa_istatistikleri.gunluk_veri %}
+                        <div class="text-center" style="flex: 1;">
+                            <div class="bg-primary rounded" style="height: 20px;"></div>
+                            <small class="d-block mt-1 text-muted">{{ veri.tarih }}</small>
+                            <small class="fw-bold">{{ veri.sayi }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-bar-chart-fill text-success"></i> En Çok Görüntülenen Sayfalar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sayfa</th>
+                                <th class="text-end">Görüntüleme</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sayfa in sayfa_istatistikleri.en_cok_goruntulenen %}
+                                <tr>
+                                    <td>{{ sayfa.sayfa_adi }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary rounded-pill">{{ sayfa.sayi }}</span>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">Henüz veri yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Son Kayıtlar ve Duyurular -->
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history text-info"></i> Son Kayıtlar
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Branş</th>
+                                <th>Takım</th>
+                                <th>Kaptan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for k in son_kayitlar %}
+                                <tr>
+                                    <td>
+                                        <span class="badge {% if k.tip == 'basketbol' %}bg-warning text-dark{% else %}bg-primary{% endif %}">
+                                            {{ k.brans }}
+                                        </span>
+                                    </td>
+                                    <td>{{ k.takim }}</td>
+                                    <td>{{ k.kaptan }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">Henüz kayıt yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-megaphone text-warning"></i> Son Duyurular
+                </h5>
+                <a href="{% url 'admin_duyurular' %}" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+            </div>
+            <div class="card-body">
+                {% for duyuru in son_duyurular %}
+                    <div class="card mb-2 border-0 bg-light">
+                        <div class="card-body py-2">
+                            <h6 class="mb-1">{{ duyuru.baslik }}</h6>
+                            <small class="text-muted">{{ duyuru.yayinlanma_tarihi|date:"d.m.Y H:i" }}</small>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-center text-muted py-4">Henüz duyuru yok</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

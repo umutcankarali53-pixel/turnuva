@@ -3,11 +3,91 @@
 import pandas as pd
 from django.contrib import admin
 from django.http import HttpResponse
-from .models import Duyuru, BasketbolTakimi, BasketbolOyuncu, FutbolTakimi, FutbolOyuncu
+from django.core.exceptions import ValidationError
+from django import forms
+from .models import Duyuru, BasketbolTakimi, BasketbolOyuncu, FutbolTakimi, FutbolOyuncu, SiteAyar, SayfaGoruntuleme, Turnuva, Mac
 
 admin.site.site_header = 'Turnuva Yönetim Sistemi'
 admin.site.site_title = 'Turnuva Admin'
 admin.site.index_title = 'Veritabanı Yönetimi'
+
+
+# SiteAyar Admin - Singleton pattern için özel form
+class SiteAyarForm(forms.ModelForm):
+    class Meta:
+        model = SiteAyar
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.instance.pk and SiteAyar.objects.exists():
+            raise forms.ValidationError("Sadece bir site ayarı kaydı olabilir. Mevcut kaydı düzenleyin.")
+        return cleaned_data
+
+
+@admin.register(SiteAyar)
+class SiteAyarAdmin(admin.ModelAdmin):
+    form = SiteAyarForm
+    list_display = ('kayit_bitis_tarihi', 'aktif')
+    list_display_links = ('kayit_bitis_tarihi',)
+    fieldsets = (
+        ('KVKK Ayarları', {
+            'fields': ('kvkk_text',)
+        }),
+        ('Kayıt Ayarları', {
+            'fields': ('kayit_bitis_tarihi',)
+        }),
+        ('WhatsApp Bildirim Ayarları', {
+            'fields': ('whatsapp_api_token', 'whatsapp_phone_number_id', 'whatsapp_recipient_number'),
+            'classes': ('collapse',)
+        }),
+        ('Durum', {
+            'fields': ('aktif',)
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # Singleton pattern: Sadece 1 kayıt olabilir
+        if SiteAyar.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        # Silmeyi engelle
+        return False
+
+
+@admin.register(SayfaGoruntuleme)
+class SayfaGoruntulemeAdmin(admin.ModelAdmin):
+    list_display = ('sayfa_adi', 'goruntuleme_tarihi', 'goruntuleme_saati', 'ip_hash')
+    list_filter = ('sayfa_yolu', 'goruntuleme_tarihi')
+    search_fields = ('sayfa_adi', 'sayfa_yolu')
+    readonly_fields = ('sayfa_yolu', 'sayfa_adi', 'goruntuleme_tarihi', 'goruntuleme_saati', 'ip_hash', 'session_key')
+    date_hierarchy = 'goruntuleme_tarihi'
+    ordering = ['-goruntuleme_tarihi', '-goruntuleme_saati']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Turnuva)
+class TurnuvaAdmin(admin.ModelAdmin):
+    list_display = ('ad', 'brans', 'durum', 'kayit_bitis_tarihi', 'olusturma_tarihi')
+    list_filter = ('brans', 'durum', 'olusturma_tarihi')
+    search_fields = ('ad',)
+    date_hierarchy = 'olusturma_tarihi'
+    ordering = ['-olusturma_tarihi']
+
+
+@admin.register(Mac)
+class MacAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'turnuva', 'tur', 'mac_sirasi', 'durum', 'tarih')
+    list_filter = ('turnuva', 'tur', 'durum', 'tarih')
+    search_fields = ('takim1_adi', 'takim2_adi')
+    ordering = ['turnuva', 'tur', 'mac_sirasi']
 
 
 @admin.action(description="Seçili Basketbol Takımlarını Excel'e Aktar")

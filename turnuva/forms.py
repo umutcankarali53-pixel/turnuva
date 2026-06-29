@@ -4,7 +4,7 @@ import re
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
-from .models import BasketbolTakimi, BasketbolOyuncu, FutbolTakimi, FutbolOyuncu, Duyuru
+from .models import BasketbolTakimi, BasketbolOyuncu, FutbolTakimi, FutbolOyuncu, Duyuru, SiteAyar
 
 
 def tc_dogrula(value):
@@ -22,7 +22,12 @@ def telefon_dogrula(value):
 
 class BaseTakimForm(forms.ModelForm):
     """Basketbol ve Futbol takımları için ortak form"""
-    
+    kvkk_onay = forms.BooleanField(
+        required=True,
+        label='KVKK Metnini Okudum ve Onaylıyorum',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+
     class Meta:
         fields = ['takim_adi', 'telefon']
         widgets = {

@@ -1,0 +1,114 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Turnuvalar{% endblock %}
+{% block page_title %}Turnuva Yönetimi{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Yeni Turnuva Ekleme -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle text-primary"></i> Yeni Turnuva Oluştur
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% url 'admin_turnuva_ekle' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="turnuva_ad" class="form-label">Turnuva Adı</label>
+                            <input type="text" class="form-control" id="turnuva_ad" name="turnuva_ad" required placeholder="2024 Yaz Turnuvası">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="turnuva_brans" class="form-label">Branş</label>
+                            <select class="form-select" id="turnuva_brans" name="turnuva_brans" required>
+                                <option value="basketbol">Basketbol</option>
+                                <option value="futbol">Futbol</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="turnuva_bitis" class="form-label">Kayıt Bitiş Tarihi</label>
+                            <input type="datetime-local" class="form-control" id="turnuva_bitis" name="turnuva_bitis" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-check-circle"></i> Oluştur
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Turnuva Listesi -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-trophy text-warning"></i> Mevcut Turnuvalar
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Turnuva Adı</th>
+                                <th>Branş</th>
+                                <th>Durum</th>
+                                <th>Kayıt Bitiş</th>
+                                <th>Oluşturulma</th>
+                                <th class="text-end">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for turnuva in turnuvalar %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ turnuva.ad }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if turnuva.brans == 'basketbol' %}bg-warning text-dark{% else %}bg-primary{% endif %}">
+                                            {{ turnuva.get_brans_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if turnuva.durum == 'kayit_acik' %}
+                                            <span class="badge bg-success">Kayıt Açık</span>
+                                        {% elif turnuva.durum == 'eslesme_yapildi' %}
+                                            <span class="badge bg-info">Eşleşme Yapıldı</span>
+                                        {% elif turnuva.durum == 'devam_ediyor' %}
+                                            <span class="badge bg-primary">Devam Ediyor</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Tamamlandı</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ turnuva.kayit_bitis_tarihi|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ turnuva.olusturma_tarihi|date:"d.m.Y H:i" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'admin_fikstur' %}?turnuva={{ turnuva.pk }}" class="btn btn-sm btn-outline-primary" title="Fikstür">
+                                            <i class="bi bi-calendar-event"></i>
+                                        </a>
+                                        <form method="POST" action="{% url 'admin_turnuva_sil' turnuva.pk %}" class="d-inline" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Henüz turnuva yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

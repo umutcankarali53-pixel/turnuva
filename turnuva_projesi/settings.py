@@ -79,6 +79,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -91,6 +93,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'turnuva.middleware.SayfaGoruntulemeMiddleware',
 ]
 
 ROOT_URLCONF = 'turnuva_projesi.urls'
@@ -206,3 +209,7 @@ ACCOUNT_PASSWORD_CHANGE_TIMEOUT = 86400  # 24 saat
 ACCOUNT_PASSWORD_RESET_URL = 'sifre_sifirla'  # Şifre sıfırlama URL'i
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Crispy Forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

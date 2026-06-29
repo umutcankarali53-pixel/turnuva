@@ -34,7 +34,37 @@
                         </div>
 
                         <h5 class="form-section-title">
-                            <i class="bi bi-person-lines-fill me-2"></i>2. Oyuncu Bilgileri
+                            <i class="bi bi-shield-check me-2"></i>2. KVKK Onayı
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card border-warning bg-light">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            {{ form.kvkk_onay }}
+                                            <label class="form-check-label" for="{{ form.kvkk_onay.id_for_label }}">
+                                                <strong>KVKK Metnini Okudum ve Onaylıyorum</strong>
+                                            </label>
+                                        </div>
+                                        {% if form.kvkk_onay.errors %}
+                                            <div class="text-danger mt-2">
+                                                {% for error in form.kvkk_onay.errors %}
+                                                    <small>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        {% if site_ayar and site_ayar.kvkk_text %}
+                                            <div class="mt-3 p-3 bg-white border rounded" style="max-height: 200px; overflow-y: auto;">
+                                                <small>{{ site_ayar.kvkk_text|linebreaks }}</small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="form-section-title">
+                            <i class="bi bi-person-lines-fill me-2"></i>3. Oyuncu Bilgileri
                         </h5>
                         {{ formset.management_form }}
 

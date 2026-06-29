@@ -7,6 +7,7 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 import os
 
+
 class Duyuru(models.Model):
     """Admin panelinden eklenecek ve ana sayfada popup/bildirim olarak görünecek duyurular"""
     baslik = models.CharField(max_length=200, verbose_name="Duyuru Başlığı")
@@ -43,7 +44,6 @@ class BasketbolOyuncu(models.Model):
     takim = models.ForeignKey(BasketbolTakimi, on_delete=models.CASCADE, related_name='oyuncular')
     ad = models.CharField(max_length=50, verbose_name="Ad")
     soyad = models.CharField(max_length=50, verbose_name="Soyad")
-    # unique=True sayesinde bir TC, BasketbolOyuncu tablosunda sadece BİR kez var olabilir!
     tc_no = models.CharField(max_length=255, verbose_name="TC Kimlik No")
 
     def save(self, *args, **kwargs):
@@ -103,7 +103,6 @@ class FutbolOyuncu(models.Model):
     takim = models.ForeignKey(FutbolTakimi, on_delete=models.CASCADE, related_name='oyuncular')
     ad = models.CharField(max_length=50, verbose_name="Ad")
     soyad = models.CharField(max_length=50, verbose_name="Soyad")
-    # unique=True sayesinde bir TC, FutbolOyuncu tablosunda sadece BİR kez var olabilir!
     tc_no = models.CharField(max_length=255, verbose_name="TC Kimlik No")
 
     def save(self, *args, **kwargs):
@@ -141,3 +140,141 @@ class FutbolOyuncu(models.Model):
 
     def __str__(self):
         return f"{self.ad} {self.soyad} ({self.takim.takim_adi})"
+
+
+class SiteAyar(models.Model):
+    """Site genel ayarları - KVKK, kayıt bitiş tarihi, WhatsApp bildirimleri"""
+    kvkk_text = models.TextField(verbose_name="KVKK Onay Metni")
+    kayit_bitis_tarihi = models.DateTimeField(verbose_name="Kayıt Bitiş Tarihi/Saati")
+    whatsapp_api_token = models.CharField(max_length=255, blank=True, verbose_name="WhatsApp API Token")
+    whatsapp_phone_number_id = models.CharField(max_length=255, blank=True, verbose_name="WhatsApp Phone Number ID")
+    whatsapp_recipient_number = models.CharField(max_length=20, blank=True, verbose_name="Bildirim Gönderilecek Numara")
+    countdown_baslik = models.CharField(max_length=200, blank=True, verbose_name="Geri Sayım Başlık")
+    countdown_ust_baslik = models.CharField(max_length=200, blank=True, verbose_name="Geri Sayım Üst Başlık")
+    countdown_alt_baslik = models.CharField(max_length=200, blank=True, verbose_name="Geri Sayım Alt Başlık")
+    aktif = models.BooleanField(default=True, verbose_name="Aktif")
+
+    class Meta:
+        verbose_name = "Site Ayarı"
+        verbose_name_plural = "Site Ayarları"
+
+    def __str__(self):
+        return "Site Ayarları"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and SiteAyar.objects.exists():
+            raise ValidationError("Sadece bir site ayarı kaydı olabilir. Mevcut kaydı düzenleyin.")
+        super().save(*args, **kwargs)
+
+
+class SayfaGoruntuleme(models.Model):
+    """Sayfa ziyaret analizi - Günlük ve aylık istatistikler için"""
+    SAYFA_SECENEKLERI = [
+        ('ana_sayfa', 'Ana Sayfa'),
+        ('kayit', 'Kayıt Sayfası'),
+        ('giris', 'Giriş Sayfası'),
+        ('profil', 'Profil Sayfası'),
+        ('fikstur', 'Fikstür Sayfası'),
+        ('duyurular', 'Duyurular Sayfası'),
+        ('basketbol_yonetim', 'Basketbol Takım Yönetimi'),
+        ('futbol_yonetim', 'Futbol Takım Yönetimi'),
+        ('admin_dashboard', 'Admin Dashboard'),
+    ]
+
+    sayfa_yolu = models.CharField(max_length=50, choices=SAYFA_SECENEKLERI, verbose_name="Sayfa Yolu")
+    sayfa_adi = models.CharField(max_length=100, verbose_name="Sayfa Adı")
+    goruntuleme_tarihi = models.DateField(verbose_name="Görüntüleme Tarihi")
+    goruntuleme_saati = models.TimeField(verbose_name="Görüntüleme Saati")
+    ip_hash = models.CharField(max_length=64, blank=True, verbose_name="IP Hash (Anonim)")
+    session_key = models.CharField(max_length=40, blank=True, verbose_name="Session Key")
+
+    class Meta:
+        verbose_name = "Sayfa Görüntüleme"
+        verbose_name_plural = "Sayfa Görüntülemeleri"
+        indexes = [
+            models.Index(fields=['sayfa_yolu', 'goruntuleme_tarihi']),
+        ]
+        ordering = ['-goruntuleme_tarihi', '-goruntuleme_saati']
+
+    def __str__(self):
+        return f"{self.sayfa_adi} - {self.goruntuleme_tarihi}"
+
+
+class Turnuva(models.Model):
+    """Turnuva bilgileri ve durumu"""
+    DURUM_SECENEKLERI = [
+        ('kayit_acik', 'Kayıt Açık'),
+        ('eslesme_yapildi', 'Eşleşme Yapıldı'),
+        ('devam_ediyor', 'Devam Ediyor'),
+        ('tamamlandi', 'Tamamlandı'),
+    ]
+
+    BRANS_SECENEKLERI = [
+        ('basketbol', 'Basketbol'),
+        ('futbol', 'Futbol'),
+    ]
+
+    ad = models.CharField(max_length=200, verbose_name="Turnuva Adı")
+    brans = models.CharField(max_length=20, choices=BRANS_SECENEKLERI, verbose_name="Branş")
+    durum = models.CharField(max_length=20, choices=DURUM_SECENEKLERI, default='kayit_acik', verbose_name="Durum")
+    kayit_bitis_tarihi = models.DateTimeField(verbose_name="Kayıt Bitiş Tarihi")
+    olusturma_tarihi = models.DateTimeField(auto_now_add=True, verbose_name="Oluşturulma Tarihi")
+
+    class Meta:
+        verbose_name = "Turnuva"
+        verbose_name_plural = "Turnuvalar"
+        ordering = ['-olusturma_tarihi']
+
+    def __str__(self):
+        return f"{self.ad} ({self.get_brans_display()})"
+
+
+class Mac(models.Model):
+    """Maç/Fikstür yönetimi - Turnuva ağacı için"""
+    DURUM_SECENEKLERI = [
+        ('bekliyor', 'Bekliyor'),
+        ('oynandi', 'Oynandı'),
+        ('iptal', 'İptal'),
+    ]
+
+    turnuva = models.ForeignKey(Turnuva, on_delete=models.CASCADE, related_name='maclar', verbose_name="Turnuva")
+    tur = models.IntegerField(verbose_name="Tur Numarası")
+    mac_sirasi = models.IntegerField(verbose_name="Maç Sırası (Tur içinde)")
+    
+    takim1_tip = models.CharField(max_length=10, choices=[('basketbol', 'Basketbol'), ('futbol', 'Futbol')])
+    takim1_id = models.IntegerField(verbose_name="Takım 1 ID")
+    takim1_adi = models.CharField(max_length=100, verbose_name="Takım 1 Adı")
+    
+    takim2_tip = models.CharField(max_length=10, choices=[('basketbol', 'Basketbol'), ('futbol', 'Futbol')])
+    takim2_id = models.IntegerField(verbose_name="Takım 2 ID")
+    takim2_adi = models.CharField(max_length=100, verbose_name="Takım 2 Adı")
+    
+    takim1_skor = models.IntegerField(null=True, blank=True, verbose_name="Takım 1 Skoru")
+    takim2_skor = models.IntegerField(null=True, blank=True, verbose_name="Takım 2 Skoru")
+    
+    tarih = models.DateTimeField(null=True, blank=True, verbose_name="Maç Tarihi")
+    yer = models.CharField(max_length=200, blank=True, verbose_name="Maç Yeri")
+    durum = models.CharField(max_length=20, choices=DURUM_SECENEKLERI, default='bekliyor', verbose_name="Maç Durumu")
+
+    class Meta:
+        verbose_name = "Maç"
+        verbose_name_plural = "Maçlar"
+        indexes = [
+            models.Index(fields=['turnuva', 'tur', 'mac_sirasi']),
+        ]
+        ordering = ['turnuva', 'tur', 'mac_sirasi']
+
+    def __str__(self):
+        return f"{self.takim1_adi} vs {self.takim2_adi} - Tur {self.tur}"
+
+    def get_takim1(self):
+        if self.takim1_tip == 'basketbol':
+            return BasketbolTakimi.objects.filter(pk=self.takim1_id).first()
+        else:
+            return FutbolTakimi.objects.filter(pk=self.takim1_id).first()
+
+    def get_takim2(self):
+        if self.takim2_tip == 'basketbol':
+            return BasketbolTakimi.objects.filter(pk=self.takim2_id).first()
+        else:
+            return FutbolTakimi.objects.filter(pk=self.takim2_id).first()

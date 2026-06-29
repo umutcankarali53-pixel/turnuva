@@ -1,0 +1,229 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Fikstür Yönetimi{% endblock %}
+{% block page_title %}Fikstür Yönetimi{% endblock %}
+
+{% block extra_css %}
+<style>
+.match-edit-modal .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.match-edit-modal .modal-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+.match-edit-modal .btn-close {
+    filter: brightness(0) invert(1);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Turnuva Seçimi ve Eşleşme Oluşturma -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-trophy text-warning"></i> Turnuva Seçin ve Eşleşme Oluşturun
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% url 'admin_eslesme_olustur' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="turnuva_id" class="form-label">Turnuva</label>
+                            <select class="form-select" id="turnuva_id" name="turnuva_id" required>
+                                <option value="">-- Turnuva Seçin --</option>
+                                {% for turnuva in turnuvalar %}
+                                    <option value="{{ turnuva.pk }}" {% if secili_turnuva and secili_turnuva.pk == turnuva.pk %}selected{% endif %}>
+                                        {{ turnuva.ad }} ({{ turnuva.get_brans_display }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="brans" class="form-label">Branş</label>
+                            <select class="form-select" id="brans" name="brans" required>
+                                <option value="basketbol">Basketbol</option>
+                                <option value="futbol">Futbol</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-shuffle"></i> Eşleşme Oluştur
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Maç Listesi -->
+        {% if secili_turnuva and maclar %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar3 text-success"></i> {{ secili_turnuva.ad }} - Maç Listesi
+                    </h5>
+                    <span class="badge bg-primary rounded-pill">{{ maclar|length }} Maç</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 10%">Tur</th>
+                                    <th style="width: 5%">Sıra</th>
+                                    <th style="width: 30%">Takım 1</th>
+                                    <th style="width: 10%" class="text-center">Skor</th>
+                                    <th style="width: 30%">Takım 2</th>
+                                    <th style="width: 10%" class="text-center">Durum</th>
+                                    <th style="width: 5%" class="text-center">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mac in maclar %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary rounded-pill">
+                                                {{ mac.tur }}. Tur
+                                            </span>
+                                        </td>
+                                        <td>{{ mac.mac_sirasi }}</td>
+                                        <td>
+                                            <strong>{{ mac.takim1_adi }}</strong>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if mac.durum == 'oynandi' %}
+                                                <span class="fw-bold">
+                                                    {{ mac.takim1_skor }} - {{ mac.takim2_skor }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ mac.takim2_adi }}</strong>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if mac.durum == 'bekliyor' %}
+                                                <span class="badge bg-warning text-dark">Bekliyor</span>
+                                            {% elif mac.durum == 'oynandi' %}
+                                                <span class="badge bg-success">Oynandı</span>
+                                            {% elif mac.durum == 'iptal' %}
+                                                <span class="badge bg-danger">İptal</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn-outline-primary" title="Düzenle" data-bs-toggle="modal" data-bs-target="#macDuzenleModal" data-mac-pk="{{ mac.pk }}" data-mac-takim1-skor="{{ mac.takim1_skor|default:'' }}" data-mac-takim2-skor="{{ mac.takim2_skor|default:'' }}" data-mac-durum="{{ mac.durum }}" data-mac-tarih="{{ mac.tarih|date:'Y-m-d H:i'|default:'' }}" data-mac-yer="{{ mac.yer|default:'' }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form method="POST" action="{% url 'admin_mac_sil' mac.pk %}" class="d-inline" onsubmit="return confirm('Bu maçı silmek istediğinize emin misiniz?')">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% elif secili_turnuva %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Seçilen turnuva için henüz maç eşleşmesi oluşturulmamış. Yukarıdan eşleşme oluşturabilirsiniz.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Maç Düzenleme Modal -->
+<div class="modal fade match-edit-modal" id="macDuzenleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2"></i>Maç Düzenle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <form method="POST" action="{% url 'admin_mac_duzenle' 0 %}" id="macDuzenleForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="mac_pk" id="mac_pk">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="takim1_skor" class="form-label">Takım 1 Skoru</label>
+                            <input type="number" class="form-control" id="takim1_skor" name="takim1_skor" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="takim2_skor" class="form-label">Takım 2 Skoru</label>
+                            <input type="number" class="form-control" id="takim2_skor" name="takim2_skor" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="durum" class="form-label">Maç Durumu</label>
+                            <select class="form-select" id="durum" name="durum">
+                                <option value="bekliyor">Bekliyor</option>
+                                <option value="oynandi">Oynandı</option>
+                                <option value="iptal">İptal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tarih" class="form-label">Maç Tarihi</label>
+                            <input type="datetime-local" class="form-control" id="tarih" name="tarih">
+                        </div>
+                        <div class="col-12">
+                            <label for="yer" class="form-label">Maç Yeri</label>
+                            <input type="text" class="form-control" id="yer" name="yer" placeholder="Maç sahası">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('macDuzenleModal');
+    const form = document.getElementById('macDuzenleForm');
+    
+    modal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const macPk = button.getAttribute('data-mac-pk');
+        const takim1Skor = button.getAttribute('data-mac-takim1-skor');
+        const takim2Skor = button.getAttribute('data-mac-takim2-skor');
+        const durum = button.getAttribute('data-mac-durum');
+        const tarih = button.getAttribute('data-mac-tarih');
+        const yer = button.getAttribute('data-mac-yer');
+        
+        document.getElementById('mac_pk').value = macPk;
+        document.getElementById('takim1_skor').value = takim1Skor;
+        document.getElementById('takim2_skor').value = takim2Skor;
+        document.getElementById('durum').value = durum;
+        document.getElementById('tarih').value = tarih;
+        document.getElementById('yer').value = yer;
+        
+        form.action = `/yonetim/mac/${macPk}/duzenle/`;
+    });
+});
+</script>
+{% endblock %}

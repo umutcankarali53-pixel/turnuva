@@ -1,35 +1,117 @@
 {% extends 'admin/base_admin.html' %}
+{% load static %}
+
 {% block title %}Kullanıcılar{% endblock %}
-{% block page_title %}Kullanıcılar{% endblock %}
+{% block page_title %}Kullanıcı Yönetimi{% endblock %}
+
 {% block content %}
-<form method="get" class="admin-toolbar">
-    <div class="input-group">
-        <input type="text" name="q" class="form-control" placeholder="Ara..." value="{{ q }}">
-        <select name="filtre" class="form-select" style="max-width:160px">
-            <option value="">Tümü</option>
-            <option value="takimsiz" {% if filtre == 'takimsiz' %}selected{% endif %}>Takımsız</option>
-            <option value="basketbol" {% if filtre == 'basketbol' %}selected{% endif %}>Basketbol</option>
-            <option value="futbol" {% if filtre == 'futbol' %}selected{% endif %}>Futbol</option>
-        </select>
-        <button class="btn btn-primary">Filtrele</button>
+<div class="row">
+    <div class="col-12">
+        <!-- Arama ve Filtreleme -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" name="q" value="{{ q }}" placeholder="Kullanıcı adı veya e-posta ara...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="filtre" onchange="this.form.submit()">
+                            <option value="">-- Tümü --</option>
+                            <option value="takimsiz" {% if filtre == 'takimsiz' %}selected{% endif %}>Takımsız</option>
+                            <option value="basketbol" {% if filtre == 'basketbol' %}selected{% endif %}>Basketbol</option>
+                            <option value="futbol" {% if filtre == 'futbol' %}selected{% endif %}>Futbol</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'admin_kullanicilar' %}" class="btn btn-secondary w-100">
+                            <i class="bi bi-arrow-clockwise"></i> Filtreyi Temizle
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Kullanıcı Listesi -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-people text-info"></i> Kullanıcılar
+                </h5>
+                <span class="badge bg-primary rounded-pill">{{ toplam }} Kullanıcı</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Kullanıcı Adı</th>
+                                <th>E-posta</th>
+                                <th>Basketbol</th>
+                                <th>Futbol</th>
+                                <th>Kayıt Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for kullanici in kullanicilar %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ kullanici.username }}</strong>
+                                    </td>
+                                    <td>{{ kullanici.email|default:"-" }}</td>
+                                    <td>
+                                        {% if kullanici.basketbol_takimi %}
+                                            <span class="badge bg-warning text-dark">Var</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Yok</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if kullanici.futbol_takimi %}
+                                            <span class="badge bg-primary">Var</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Yok</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ kullanici.date_joined|date:"d.m.Y H:i" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">Henüz kullanıcı yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sayfalama -->
+        {% if kullanicilar.has_other_pages %}
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if kullanicilar.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?sayfa={{ kullanicilar.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if filtre %}&filtre={{ filtre }}{% endif %}">Önceki</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in kullanicilar.paginator.page_range %}
+                        <li class="page-item {% if kullanicilar.number == num %}active{% endif %}">
+                            <a class="page-link" href="?sayfa={{ num }}{% if q %}&q={{ q }}{% endif %}{% if filtre %}&filtre={{ filtre }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if kullanicilar.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?sayfa={{ kullanicilar.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if filtre %}&filtre={{ filtre }}{% endif %}">Sonraki</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
     </div>
-    <a href="{% url 'admin_export_kullanicilar' %}" class="btn btn-accent btn-sm">Excel</a>
-</form>
-<div class="admin-card"><div class="admin-card-header"><h5>{{ toplam }} kullanıcı</h5></div><div class="admin-card-body p-0">
-    <table class="table admin-table mb-0">
-        <thead><tr><th>Kullanıcı</th><th>E-posta</th><th>Kayıt</th><th>BB</th><th>FB</th><th>Yetki</th></tr></thead>
-        <tbody>
-        {% for u in kullanicilar %}
-        <tr>
-            <td class="fw-semibold">{{ u.username }}</td>
-            <td class="small text-muted">{{ u.email|default:"—" }}</td>
-            <td class="small text-muted">{{ u.date_joined|date:"d.m.Y" }}</td>
-            <td>{% if u.basketbol_takimi %}<span class="badge bg-warning text-dark">{{ u.basketbol_takimi.takim_adi }}</span>{% else %}—{% endif %}</td>
-            <td>{% if u.futbol_takimi %}<span class="badge bg-success">{{ u.futbol_takimi.takim_adi }}</span>{% else %}—{% endif %}</td>
-            <td>{% if u.is_superuser %}Super{% elif u.is_staff %}Staff{% else %}User{% endif %}</td>
-        </tr>
-        {% empty %}<tr><td colspan="6" class="text-center py-4 text-muted">Yok</td></tr>{% endfor %}
-        </tbody>
-    </table>
-</div></div>
+</div>
 {% endblock %}

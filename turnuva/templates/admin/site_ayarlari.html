@@ -1,0 +1,136 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Site Ayarları{% endblock %}
+{% block page_title %}Site Genel Ayarları{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear-fill text-primary"></i> Site Ayarları
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <!-- KVKK Ayarları -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-shield-check"></i> KVKK / Gizlilik Sözleşmesi
+                        </h6>
+                        <div class="mb-3">
+                            <label for="kvkk_text" class="form-label">KVKK Onay Metni</label>
+                            <textarea class="form-control" id="kvkk_text" name="kvkk_text" rows="8" required>{{ site_ayar.kvkk_text|default:'' }}</textarea>
+                            <div class="form-text">
+                                Bu metin kullanıcıların kayıt sırasında onaylaması gereken KVKK metnidir.
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Kayıt Ayarları -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-calendar-check"></i> Kayıt Ayarları
+                        </h6>
+                        <div class="mb-3">
+                            <label for="kayit_bitis_tarihi" class="form-label">Kayıt Bitiş Tarihi ve Saati</label>
+                            <input type="datetime-local" class="form-control" id="kayit_bitis_tarihi" name="kayit_bitis_tarihi" 
+                                   value="{{ site_ayar.kayit_bitis_tarihi|date:'Y-m-d H:i'|default:'' }}">
+                            <div class="form-text">
+                                Bu tarih/saat geçtikten sonra kayıtlar otomatik olarak kapanır.
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Geri Sayım Ayarları -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-hourglass-split"></i> Ana Sayfa Geri Sayım Ayarları
+                        </h6>
+                        <div class="mb-3">
+                            <label for="countdown_ust_baslik" class="form-label">Geri Sayım Üst Başlık</label>
+                            <input type="text" class="form-control" id="countdown_ust_baslik" name="countdown_ust_baslik" 
+                                   value="{{ site_ayar.countdown_ust_baslik|default:'' }}" placeholder="Örn: Turnuvaya Kalan Süre">
+                        </div>
+                        <div class="mb-3">
+                            <label for="countdown_baslik" class="form-label">Geri Sayım Başlık</label>
+                            <input type="text" class="form-control" id="countdown_baslik" name="countdown_baslik" 
+                                   value="{{ site_ayar.countdown_baslik|default:'' }}" placeholder="Örn: 2024 Yaz Turnuvası">
+                        </div>
+                        <div class="mb-3">
+                            <label for="countdown_alt_baslik" class="form-label">Geri Sayım Alt Başlık</label>
+                            <input type="text" class="form-control" id="countdown_alt_baslik" name="countdown_alt_baslik" 
+                                   value="{{ site_ayar.countdown_alt_baslik|default:'' }}" placeholder="Örn: Hemen kayıt olun!">
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- WhatsApp Bildirim Ayarları -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-whatsapp"></i> WhatsApp Bildirim Ayarları
+                        </h6>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> 
+                            Yeni takım kaydı olduğunda admin'e WhatsApp mesajı göndermek için gerekli bilgileri doldurun.
+                            <a href="https://developers.facebook.com/docs/whatsapp/cloud-api" target="_blank">WhatsApp Cloud API</a> üzerinden alabilirsiniz.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="whatsapp_api_token" class="form-label">WhatsApp API Token</label>
+                            <input type="text" class="form-control" id="whatsapp_api_token" name="whatsapp_api_token" 
+                                   value="{{ site_ayar.whatsapp_api_token|default:'' }}" placeholder="EAA...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="whatsapp_phone_number_id" class="form-label">WhatsApp Phone Number ID</label>
+                            <input type="text" class="form-control" id="whatsapp_phone_number_id" name="whatsapp_phone_number_id" 
+                                   value="{{ site_ayar.whatsapp_phone_number_id|default:'' }}" placeholder="123456789">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="whatsapp_recipient_number" class="form-label">Bildirim Gönderilecek Numara</label>
+                            <input type="text" class="form-control" id="whatsapp_recipient_number" name="whatsapp_recipient_number" 
+                                   value="{{ site_ayar.whatsapp_recipient_number|default:'' }}" placeholder="+905551234567">
+                            <div class="form-text">
+                                Bildirimlerin gönderileceği admin telefon numarası (ülke kodu ile birlikte).
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Durum -->
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="aktif" name="aktif" {% if site_ayar.aktif %}checked{% endif %}>
+                            <label class="form-check-label" for="aktif">Aktif</label>
+                        </div>
+                        <div class="form-text">
+                            Site ayarlarının aktif olup olmadığını belirler.
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Geri Dön
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

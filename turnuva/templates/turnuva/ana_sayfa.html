@@ -1,115 +1,374 @@
 {% extends 'turnuva/base.html' %}
+{% load static %}
 
-{% block title %}Ana Sayfa — {{ site.site_adi|default:"Turnuva Kayıt Sistemi" }}{% endblock %}
+{% block title %}{{ site.site_adi }}{% endblock %}
+
+{% block meta_description %}
+{{ site.site_aciklama }}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.countdown-section {
+    background: linear-gradient(135deg, #0f2744 0%, #1a365d 100%);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+.countdown-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    background-size: 50px 50px;
+    opacity: 0.3;
+    animation: float 20s linear infinite;
+}
+@keyframes float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50px); }
+}
+.countdown-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+}
+.countdown-ust {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+.countdown-baslik {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    line-height: 1.2;
+}
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 3rem 0;
+    flex-wrap: wrap;
+}
+.countdown-item {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    min-width: 150px;
+    border: 2px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+.countdown-item:hover {
+    transform: translateY(-5px);
+}
+.countdown-value {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.countdown-label {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+.countdown-alt {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin-top: 2rem;
+}
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    cursor: pointer;
+    z-index: 2;
+}
+.scroll-indicator i {
+    font-size: 2rem;
+    color: white;
+    opacity: 0.8;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-10px); }
+    60% { transform: translateX(-50%) translateY(-5px); }
+}
+.fixture-section {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #0f2744;
+}
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 3rem;
+}
+.match-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 4px solid #0f2744;
+}
+.match-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.match-teams {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.match-team {
+    flex: 1;
+    min-width: 200px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.match-team.team1 {
+    text-align: right;
+}
+.match-team.team2 {
+    text-align: left;
+}
+.match-vs {
+    font-weight: 800;
+    color: #0f2744;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+.match-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.match-tur {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+.match-score {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #0f2744;
+}
+.match-status {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+.status-bekliyor {
+    background: #fff3cd;
+    color: #856404;
+}
+.status-oynandi {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+.status-iptal {
+    background: #f8d7da;
+    color: #721c24;
+}
+@media (max-width: 768px) {
+    .countdown-baslik {
+        font-size: 2.5rem;
+    }
+    .countdown-value {
+        font-size: 3rem;
+    }
+    .countdown-item {
+        min-width: 120px;
+        padding: 1.5rem;
+    }
+    .match-teams {
+        flex-direction: column;
+        align-items: center;
+    }
+    .match-team {
+        text-align: center !important;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-{% if son_duyuru %}
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
-    <div id="duyuruToast" class="toast shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header toast-header-custom">
-            <i class="bi bi-megaphone-fill me-2"></i>
-            <strong class="me-auto">{{ son_duyuru.baslik }}</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Kapat"></button>
+<!-- Countdown Timer Section - FULL SCREEN -->
+{% if site_ayar and site_ayar.kayit_bitis_tarihi %}
+<div class="countdown-section" id="countdown-section">
+    <div class="countdown-content">
+        {% if site_ayar.countdown_ust_baslik %}
+        <div class="countdown-ust">{{ site_ayar.countdown_ust_baslik }}</div>
+        {% endif %}
+        
+        {% if site_ayar.countdown_baslik %}
+        <h1 class="countdown-baslik">{{ site_ayar.countdown_baslik }}</h1>
+        {% endif %}
+        
+        <div class="countdown-timer" id="countdown" data-bitis="{{ site_ayar.kayit_bitis_tarihi|date:'Y-m-d H:i:s' }}">
+            <div class="countdown-item">
+                <div class="countdown-value" id="gun">0</div>
+                <div class="countdown-label">Gün</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-value" id="saat">0</div>
+                <div class="countdown-label">Saat</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-value" id="dakika">0</div>
+                <div class="countdown-label">Dakika</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-value" id="saniye">0</div>
+                <div class="countdown-label">Saniye</div>
+            </div>
         </div>
-        <div class="toast-body bg-white" onclick="window.location.href='{% url 'duyurular' %}'" style="cursor: pointer;">
-            Detayları görmek için tıklayın.
+        
+        {% if site_ayar.countdown_alt_baslik %}
+        <div class="countdown-alt">{{ site_ayar.countdown_alt_baslik }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="scroll-indicator" onclick="document.getElementById('fixture-section').scrollIntoView({behavior: 'smooth'})">
+        <i class="bi bi-chevron-double-down"></i>
+    </div>
+</div>
+{% endif %}
+
+<!-- Fixture/Match Tree Section -->
+{% if maclar %}
+<div class="fixture-section" id="fixture-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Fikstür ve Maç Programı</h2>
+            <p class="section-subtitle">Turnuva maç eşleşmeleri ve programı</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                {% for mac in maclar %}
+                <div class="match-card">
+                    <div class="match-teams">
+                        <div class="match-team team1">{{ mac.takim1_adi }}</div>
+                        <div class="match-vs">VS</div>
+                        <div class="match-team team2">{{ mac.takim2_adi }}</div>
+                    </div>
+                    <div class="match-info">
+                        <span class="match-tur">
+                            <i class="bi bi-trophy me-1"></i>{{ mac.tur }}. Tur
+                        </span>
+                        {% if mac.durum == 'oynandi' %}
+                        <span class="match-score">{{ mac.takim1_skor }} - {{ mac.takim2_skor }}</span>
+                        {% else %}
+                        <span class="match-score">-</span>
+                        {% endif %}
+                        <span class="match-status status-{{ mac.durum }}">
+                            {% if mac.durum == 'bekliyor' %}Bekliyor
+                            {% elif mac.durum == 'oynandi' %}Oynandı
+                            {% elif mac.durum == 'iptal' %}İptal
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'fikstur' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-calendar-event me-2"></i>Tüm Fikstürü Görüntüle
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% endif %}
 
-<section class="hero-section">
-    <div class="container text-center">
-        <span class="hero-badge">{{ site.turnuva_adi|default:"2026 Spor Turnuvası" }}</span>
-        <h1 class="display-5 fw-bold mb-3">{{ site.site_adi|default:"Turnuva Kayıt Sistemi" }}</h1>
-        <p class="lead mb-0 opacity-75 mx-auto" style="max-width: 600px;">
-            Basketbol ve futbol branşlarında düzenlenen turnuvaya hemen kayıt olun.
-        </p>
-
-        <div class="countdown-grid" id="countdown">
-            <div class="countdown-item">
-                <div class="countdown-value" id="cd-gun">--</div>
-                <div class="countdown-label">Gün</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-value" id="cd-saat">--</div>
-                <div class="countdown-label">Saat</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-value" id="cd-dakika">--</div>
-                <div class="countdown-label">Dakika</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-value" id="cd-saniye">--</div>
-                <div class="countdown-label">Saniye</div>
-            </div>
-        </div>
-
-        <p class="mb-4 opacity-75">
-            <i class="bi bi-calendar-event me-1"></i>
-            {{ site.turnuva_tarihi_gosterim|default:"15 Ağustos 2026" }} — {{ site.turnuva_saati|default:"10:00" }}
-            &nbsp;|&nbsp;
-            <i class="bi bi-geo-alt me-1"></i>
-            {{ site.konum_adi|default:"Eminönü Meydanı" }}
-        </p>
-
-        {% if not user.is_authenticated %}
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{% url 'kayit_ol' %}" class="btn btn-accent btn-lg px-4">
-                <i class="bi bi-person-plus me-2"></i>Kayıt Ol
-            </a>
-            <a href="{% url 'giris_yap' %}" class="btn btn-outline-light btn-lg px-4">
-                Giriş Yap
-            </a>
-        </div>
-        {% else %}
-        <a href="{% url 'profil' %}" class="btn btn-accent btn-lg px-4">
-            <i class="bi bi-people me-2"></i>Takımını Yönet
-        </a>
-        {% endif %}
+<!-- Duyuru Alert -->
+{% if son_duyuru %}
+<div class="alert alert-warning alert-dismissible fade show m-0" role="alert" style="border-radius: 0;">
+    <div class="container">
+        <strong><i class="bi bi-megaphone"></i> {{ son_duyuru.baslik }}</strong>
+        <p class="mb-0 mt-2">{{ son_duyuru.icerik|truncatewords:30 }}</p>
+        <a href="{% url 'duyurular' %}" class="btn btn-sm btn-warning mt-2">Tüm Duyurular</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</section>
-
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        {% if son_duyuru %}
-        var toastEl = document.getElementById('duyuruToast');
-        if (toastEl) new bootstrap.Toast(toastEl, { autohide: false }).show();
-        {% endif %}
-
-        var targetDate = new Date("{{ site.turnuva_tarihi_js|default:'Aug 15, 2026 10:00:00' }}").getTime();
-
-        function pad(n) { return n < 10 ? '0' + n : n; }
-
-        var timer = setInterval(function() {
-            var now = new Date().getTime();
-            var fark = targetDate - now;
-            
-            if (fark < 0) {
-                clearInterval(timer);
-                var cd = document.getElementById('countdown');
-                if (cd) cd.innerHTML = '<div class="countdown-finished"><i class="bi bi-flag-fill me-2"></i>TURNUVA BASLADI!</div>';
-                return;
-            }
-
-            var gun = Math.floor(fark / 86400000);
-            var saat = Math.floor((fark % 86400000) / 3600000);
-            var dakika = Math.floor((fark % 3600000) / 60000);
-            var saniye = Math.floor((fark % 60000) / 1000);
-
-            var elGun = document.getElementById('cd-gun');
-            var elSaat = document.getElementById('cd-saat');
-            var elDakika = document.getElementById('cd-dakika');
-            var elSaniye = document.getElementById('cd-saniye');
-
-            if (elGun) elGun.textContent = pad(gun);
-            if (elSaat) elSaat.textContent = pad(saat);
-            if (elDakika) elDakika.textContent = pad(dakika);
-            if (elSaniye) elSaniye.textContent = pad(saniye);
-        }, 1000);
-    });
+// Countdown Timer
+document.addEventListener('DOMContentLoaded', function() {
+    const countdownElement = document.getElementById('countdown');
+    if (!countdownElement) return;
+    
+    const bitisTarihi = new Date(countdownElement.dataset.bitis).getTime();
+    
+    function guncelleGeriSayim() {
+        const simdi = new Date().getTime();
+        const fark = bitisTarihi - simdi;
+        
+        if (fark < 0) {
+            document.getElementById('gun').textContent = '0';
+            document.getElementById('saat').textContent = '0';
+            document.getElementById('dakika').textContent = '0';
+            document.getElementById('saniye').textContent = '0';
+            return;
+        }
+        
+        const gun = Math.floor(fark / (1000 * 60 * 60 * 24));
+        const saat = Math.floor((fark % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const dakika = Math.floor((fark % (1000 * 60 * 60)) / (1000 * 60));
+        const saniye = Math.floor((fark % (1000 * 60)) / 1000);
+        
+        document.getElementById('gun').textContent = gun;
+        document.getElementById('saat').textContent = saat;
+        document.getElementById('dakika').textContent = dakika;
+        document.getElementById('saniye').textContent = saniye;
+    }
+    
+    guncelleGeriSayim();
+    setInterval(guncelleGeriSayim, 1000);
+});
 </script>
 {% endblock %}
