@@ -1,0 +1,12 @@
+<aside class="admin-sidebar" id="adminSidebar">
+    <a href="{% url 'admin_dashboard' %}" class="sidebar-brand"><i class="bi bi-trophy-fill text-warning"></i><span>Yonetim Paneli</span></a>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'admin_dashboard' %}" class="{% if active_page == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+        <li><a href="{% url 'admin_basketbol_listesi' %}" class="{% if active_page == 'basketbol' %}active{% endif %}"><i class="bi bi-dribbble"></i> Basketbol</a></li>
+        <li><a href="{% url 'admin_futbol_listesi' %}" class="{% if active_page == 'futbol' %}active{% endif %}"><i class="bi bi-circle"></i> Futbol</a></li>
+        <li><a href="{% url 'admin_duyurular' %}" class="{% if active_page == 'duyurular' %}active{% endif %}"><i class="bi bi-megaphone"></i> Duyurular</a></li>
+        <li><a href="{% url 'admin_kullanicilar' %}" class="{% if active_page == 'kullanicilar' %}active{% endif %}"><i class="bi bi-people"></i> Kullanicilar</a></li>
+        <li><a href="{% url 'admin_export_tum' %}"><i class="bi bi-download"></i> Excel Indir</a></li>
+    </ul>
+    <div class="sidebar-footer"><a href="{% url 'ana_sayfa' %}"><i class="bi bi-arrow-left me-1"></i> Siteye Don</a></div>
+</aside>

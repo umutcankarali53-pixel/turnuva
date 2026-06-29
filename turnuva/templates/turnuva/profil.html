@@ -1,43 +1,82 @@
 {% extends 'turnuva/base.html' %}
 
-{% block content %}
-<h2 class="mb-4">Kaptan Paneli</h2>
+{% block title %}Profilim — {{ site.site_adi }}{% endblock %}
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card shadow border-warning">
-            <div class="card-header bg-warning text-dark fw-bold">
-                🏀 Basketbol Takımı Durumu
-            </div>
-            <div class="card-body">
-                {% if basketbol_takimi %}
-                    <h5 class="card-title text-success">Kayıtlı Takım: {{ basketbol_takimi.takim_adi }}</h5>
-                    <p>Oyuncu formlarını güncellemek için aşağıdaki butonu kullanabilirsiniz.</p>
-                    <<a href="{% url 'basketbol_yonetim' %}" class="btn btn-outline-warning">Takımı Güncelle</a>
-                {% else %}
-                    <h5 class="card-title text-danger">Takımınız Yok</h5>
-                    <p>Henüz bir basketbol takımı oluşturmadınız (4 Oyuncu).</p>
-                    <a href="{% url 'basketbol_yonetim' %}" class="btn btn-warning">Basketbol Takımı Oluştur</a>
-                {% endif %}
-            </div>
-        </div>
+{% block content %}
+<div class="container py-4">
+    <div class="page-header">
+        <h1>Kaptan Paneli</h1>
+        <p>Merhaba <strong>{{ user.username }}</strong>, takım kayıtlarınızı buradan yönetebilirsiniz.</p>
     </div>
 
-    <div class="col-md-6 mb-4">
-        <div class="card shadow border-success">
-            <div class="card-header bg-success text-white fw-bold">
-                ⚽ Futbol Takımı Durumu
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card sport-card-basketball h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon stat-icon-basketball me-3 mb-0">
+                            <i class="bi bi-dribbble"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">Basketbol Takımı</h5>
+                            <small class="text-muted">4 oyuncu gerekli</small>
+                        </div>
+                    </div>
+
+                    {% if basketbol_takimi %}
+                        <span class="status-badge status-active mb-3">
+                            <i class="bi bi-check-circle-fill"></i>Kayıtlı
+                        </span>
+                        <h6 class="fw-bold">{{ basketbol_takimi.takim_adi }}</h6>
+                        <p class="text-muted small">Oyuncu bilgilerinizi güncellemek için aşağıdaki butonu kullanın.</p>
+                        <a href="{% url 'basketbol_yonetim' %}" class="btn btn-outline-accent">
+                            <i class="bi bi-pencil me-1"></i>Takımı Güncelle
+                        </a>
+                    {% else %}
+                        <span class="status-badge status-inactive mb-3">
+                            <i class="bi bi-x-circle-fill"></i>Kayıt Yok
+                        </span>
+                        <p class="text-muted">Henüz bir basketbol takımı oluşturmadınız.</p>
+                        <a href="{% url 'basketbol_yonetim' %}" class="btn btn-accent">
+                            <i class="bi bi-plus-circle me-1"></i>Basketbol Takımı Oluştur
+                        </a>
+                    {% endif %}
+                </div>
             </div>
-            <div class="card-body">
-                {% if futbol_takimi %}
-                    <h5 class="card-title text-success">Kayıtlı Takım: {{ futbol_takimi.takim_adi }}</h5>
-                    <p>Oyuncu formlarını güncellemek için aşağıdaki butonu kullanabilirsiniz.</p>
-                    <a href="{% url 'futbol_yonetim' %}" class="btn btn-outline-success">Takımı Güncelle</a>
-                {% else %}
-                    <h5 class="card-title text-danger">Takımınız Yok</h5>
-                    <p>Henüz bir futbol takımı oluşturmadınız (8 Oyuncu).</p>
-                    <a href="{% url 'futbol_yonetim' %}" class="btn btn-success">Futbol Takımı Oluştur</a>
-                {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <div class="card sport-card-football h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon stat-icon-football me-3 mb-0">
+                            <i class="bi bi-circle"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">Futbol Takımı</h5>
+                            <small class="text-muted">8 oyuncu gerekli</small>
+                        </div>
+                    </div>
+
+                    {% if futbol_takimi %}
+                        <span class="status-badge status-active mb-3">
+                            <i class="bi bi-check-circle-fill"></i>Kayıtlı
+                        </span>
+                        <h6 class="fw-bold">{{ futbol_takimi.takim_adi }}</h6>
+                        <p class="text-muted small">Oyuncu bilgilerinizi güncellemek için aşağıdaki butonu kullanın.</p>
+                        <a href="{% url 'futbol_yonetim' %}" class="btn btn-outline-accent">
+                            <i class="bi bi-pencil me-1"></i>Takımı Güncelle
+                        </a>
+                    {% else %}
+                        <span class="status-badge status-inactive mb-3">
+                            <i class="bi bi-x-circle-fill"></i>Kayıt Yok
+                        </span>
+                        <p class="text-muted">Henüz bir futbol takımı oluşturmadınız.</p>
+                        <a href="{% url 'futbol_yonetim' %}" class="btn btn-accent">
+                            <i class="bi bi-plus-circle me-1"></i>Futbol Takımı Oluştur
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

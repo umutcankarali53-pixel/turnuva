@@ -1,79 +1,92 @@
 {% extends 'turnuva/base.html' %}
 
+{% block title %}Yönetim Paneli — {{ site.site_adi }}{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-    <h2>👑 Admin Kontrol Paneli</h2>
-</div>
-
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-success alert-dismissible fade show">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="container py-4">
+    <div class="admin-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-0">Yönetim Paneli</h1>
+            <p class="text-muted mb-0 mt-1">Turnuva kayıtları ve duyuru yönetimi</p>
         </div>
-    {% endfor %}
-{% endif %}
-
-<div class="row">
-    <div class="col-md-5 mb-4">
-        
-        <div class="card shadow border-warning mb-3">
-            <div class="card-body text-center">
-                <h5 class="card-title text-warning fw-bold">🏀 Toplam Basketbol Takımı</h5>
-                <h1 class="display-1 fw-bold">{{ basketbol_sayisi }}</h1>
-                <a href="{% url 'excel_indir_basketbol' %}" class="btn btn-warning w-100 mt-2">
-                    📥 Basketbol Kayıtlarını Excel İndir
-                </a>
-            </div>
-        </div>
-
-        <div class="card shadow border-success">
-            <div class="card-body text-center">
-                <h5 class="card-title text-success fw-bold">⚽ Toplam Futbol Takımı</h5>
-                <h1 class="display-1 fw-bold">{{ futbol_sayisi }}</h1>
-                <a href="{% url 'excel_indir_futbol' %}" class="btn btn-success w-100 mt-2">
-                    📥 Futbol Kayıtlarını Excel İndir
-                </a>
-            </div>
-        </div>
-
+        <a href="/admin/" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-gear me-1"></i>Django Admin
+        </a>
     </div>
 
-    <div class="col-md-7 mb-4">
-        <div class="card shadow border-primary mb-4">
-            <div class="card-header bg-primary text-white fw-bold">
-                📢 Yeni Duyuru Yayınla
-            </div>
-            <div class="card-body bg-light">
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="mb-2">{{ form.baslik }}</div>
-                    <div class="mb-2">{{ form.icerik }}</div>
-                    <div class="form-check mb-3">
-                        {{ form.aktif }}
-                        <label class="form-check-label text-muted">Ana sayfada popup olarak görünsün mü?</label>
+    <div class="row g-4">
+        <div class="col-md-5">
+            <div class="card admin-stat-card mb-4">
+                <div class="card-body text-center p-4">
+                    <div class="stat-icon stat-icon-basketball mx-auto">
+                        <i class="bi bi-dribbble"></i>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Duyuruyu Yayınla</button>
-                </form>
+                    <h6 class="text-muted fw-semibold">Basketbol Takımları</h6>
+                    <div class="stat-number">{{ basketbol_sayisi }}</div>
+                    <a href="{% url 'excel_indir_basketbol' %}" class="btn btn-accent w-100 mt-3">
+                        <i class="bi bi-download me-1"></i>Excel İndir
+                    </a>
+                </div>
+            </div>
+
+            <div class="card admin-stat-card">
+                <div class="card-body text-center p-4">
+                    <div class="stat-icon stat-icon-football mx-auto">
+                        <i class="bi bi-circle"></i>
+                    </div>
+                    <h6 class="text-muted fw-semibold">Futbol Takımları</h6>
+                    <div class="stat-number">{{ futbol_sayisi }}</div>
+                    <a href="{% url 'excel_indir_futbol' %}" class="btn btn-accent w-100 mt-3">
+                        <i class="bi bi-download me-1"></i>Excel İndir
+                    </a>
+                </div>
             </div>
         </div>
 
-        <h5 class="text-muted">Geçmiş Duyurular</h5>
-        <div class="list-group shadow-sm">
-            {% for duyuru in duyurular %}
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-megaphone me-2"></i>Yeni Duyuru Yayınla
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% include 'includes/form_field.html' with field=form.baslik %}
+                        {% include 'includes/form_field.html' with field=form.icerik %}
+                        <div class="form-check mb-3">
+                            {{ form.aktif }}
+                            <label class="form-check-label" for="{{ form.aktif.id_for_label }}">
+                                Ana sayfada popup olarak göster
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Duyuruyu Yayınla
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3">Geçmiş Duyurular</h5>
+            <div class="list-group">
+                {% for duyuru in duyurular %}
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3">
                     <div>
-                        <strong class="mb-1">{{ duyuru.baslik }}</strong>
+                        <strong>{{ duyuru.baslik }}</strong>
                         <br>
-                        <small class="text-muted">{{ duyuru.yayinlanma_tarihi|date:"d M Y H:i" }}</small>
+                        <small class="text-muted">{{ duyuru.yayinlanma_tarihi|date:"d M Y, H:i" }}</small>
                     </div>
                     {% if duyuru.aktif %}
-                        <span class="badge bg-success rounded-pill">Yayında</span>
+                        <span class="badge bg-success">Yayında</span>
                     {% else %}
-                        <span class="badge bg-secondary rounded-pill">Pasif</span>
+                        <span class="badge bg-secondary">Pasif</span>
                     {% endif %}
                 </div>
-            {% endfor %}
+                {% empty %}
+                <div class="list-group-item text-muted text-center py-4">
+                    Henüz duyuru yayınlanmamış.
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

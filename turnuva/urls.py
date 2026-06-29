@@ -1,24 +1,32 @@
-# turnuva/urls.py
-
 from django.urls import path
 from . import views
 
 urlpatterns = [
     path('', views.ana_sayfa, name='ana_sayfa'),
     path('duyurular/', views.duyurular_sayfasi, name='duyurular'),
-
     path('kayit/', views.kayit_ol, name='kayit_ol'),
     path('giris/', views.giris_yap, name='giris_yap'),
     path('cikis/', views.cikis_yap, name='cikis_yap'),
-
     path('profil/', views.profil, name='profil'),
-
-   
     path('basketbol-yonetim/', views.basketbol_takim_yonetimi, name='basketbol_yonetim'),
     path('futbol-yonetim/', views.futbol_takim_yonetimi, name='futbol_yonetim'),
-    path('yonetim/', views.ozel_yonetim_paneli, name='ozel_yonetim'),
-    path('yonetim/excel-basketbol/', views.excel_indir_basketbol, name='excel_indir_basketbol'),
-    path('yonetim/excel-futbol/', views.excel_indir_futbol, name='excel_indir_futbol'),
-
-    
+    path('yonetim/', views.admin_dashboard, name='admin_dashboard'),
+    path('yonetim/basketbol/', views.admin_basketbol_listesi, name='admin_basketbol_listesi'),
+    path('yonetim/basketbol/<int:pk>/', views.admin_basketbol_detay, name='admin_basketbol_detay'),
+    path('yonetim/basketbol/<int:pk>/sil/', views.admin_basketbol_sil, name='admin_basketbol_sil'),
+    path('yonetim/futbol/', views.admin_futbol_listesi, name='admin_futbol_listesi'),
+    path('yonetim/futbol/<int:pk>/', views.admin_futbol_detay, name='admin_futbol_detay'),
+    path('yonetim/futbol/<int:pk>/sil/', views.admin_futbol_sil, name='admin_futbol_sil'),
+    path('yonetim/duyurular/', views.admin_duyurular, name='admin_duyurular'),
+    path('yonetim/duyurular/<int:pk>/duzenle/', views.admin_duyuru_duzenle, name='admin_duyuru_duzenle'),
+    path('yonetim/duyurular/<int:pk>/sil/', views.admin_duyuru_sil, name='admin_duyuru_sil'),
+    path('yonetim/duyurular/<int:pk>/toggle/', views.admin_duyuru_toggle, name='admin_duyuru_toggle'),
+    path('yonetim/kullanicilar/', views.admin_kullanicilar, name='admin_kullanicilar'),
+    path('yonetim/excel-basketbol/', views.admin_export_basketbol, name='admin_export_basketbol'),
+    path('yonetim/excel-futbol/', views.admin_export_futbol, name='admin_export_futbol'),
+    path('yonetim/excel-tum/', views.admin_export_tum, name='admin_export_tum'),
+    path('yonetim/excel-kullanicilar/', views.admin_export_kullanicilar, name='admin_export_kullanicilar'),
+    path('yonetim/eski/', views.ozel_yonetim_paneli, name='ozel_yonetim'),
+    path('yonetim/excel-basketbol/eski/', views.excel_indir_basketbol, name='excel_indir_basketbol'),
+    path('yonetim/excel-futbol/eski/', views.excel_indir_futbol, name='excel_indir_futbol'),
 ]

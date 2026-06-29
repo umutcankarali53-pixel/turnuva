@@ -1,0 +1,35 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Kullanıcılar{% endblock %}
+{% block page_title %}Kullanıcılar{% endblock %}
+{% block content %}
+<form method="get" class="admin-toolbar">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Ara..." value="{{ q }}">
+        <select name="filtre" class="form-select" style="max-width:160px">
+            <option value="">Tümü</option>
+            <option value="takimsiz" {% if filtre == 'takimsiz' %}selected{% endif %}>Takımsız</option>
+            <option value="basketbol" {% if filtre == 'basketbol' %}selected{% endif %}>Basketbol</option>
+            <option value="futbol" {% if filtre == 'futbol' %}selected{% endif %}>Futbol</option>
+        </select>
+        <button class="btn btn-primary">Filtrele</button>
+    </div>
+    <a href="{% url 'admin_export_kullanicilar' %}" class="btn btn-accent btn-sm">Excel</a>
+</form>
+<div class="admin-card"><div class="admin-card-header"><h5>{{ toplam }} kullanıcı</h5></div><div class="admin-card-body p-0">
+    <table class="table admin-table mb-0">
+        <thead><tr><th>Kullanıcı</th><th>E-posta</th><th>Kayıt</th><th>BB</th><th>FB</th><th>Yetki</th></tr></thead>
+        <tbody>
+        {% for u in kullanicilar %}
+        <tr>
+            <td class="fw-semibold">{{ u.username }}</td>
+            <td class="small text-muted">{{ u.email|default:"—" }}</td>
+            <td class="small text-muted">{{ u.date_joined|date:"d.m.Y" }}</td>
+            <td>{% if u.basketbol_takimi %}<span class="badge bg-warning text-dark">{{ u.basketbol_takimi.takim_adi }}</span>{% else %}—{% endif %}</td>
+            <td>{% if u.futbol_takimi %}<span class="badge bg-success">{{ u.futbol_takimi.takim_adi }}</span>{% else %}—{% endif %}</td>
+            <td>{% if u.is_superuser %}Super{% elif u.is_staff %}Staff{% else %}User{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="6" class="text-center py-4 text-muted">Yok</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div></div>
+{% endblock %}

@@ -5,20 +5,15 @@ from django.contrib import admin
 from django.http import HttpResponse
 from .models import Duyuru, BasketbolTakimi, BasketbolOyuncu, FutbolTakimi, FutbolOyuncu
 
-# -----------------------------------------------------------------------------
-# EXCEL EXPORT FONKSİYONLARI (ADMIN AKSİYONLARI)
-# -----------------------------------------------------------------------------
+admin.site.site_header = 'Turnuva Yönetim Sistemi'
+admin.site.site_title = 'Turnuva Admin'
+admin.site.index_title = 'Veritabanı Yönetimi'
+
 
 @admin.action(description="Seçili Basketbol Takımlarını Excel'e Aktar")
 def basketbol_excel_aktar(modeladmin, request, queryset):
-    # Excel'de görünecek sütunları hazırlıyoruz
     veri_listesi = []
-    
-    for takim in queryset:
-        # Takıma bağlı oyuncuları çekiyoruz
-        oyuncular = takim.oyuncular.all()
-        
-        # Her takımı satır satır işliyoruz (Oyuncular yan yana listelenecek şekilde)
+    for takim in queryset.select_related('kaptan').prefetch_related('oyuncular'):
         satir = {
             'Takım Adı': takim.takim_adi,
             'Kaptan Kullanıcı Adı': takim.kaptan.username,
@@ -26,35 +21,24 @@ def basketbol_excel_aktar(modeladmin, request, queryset):
             'İletişim Telefonu': takim.telefon,
             'Kayıt Tarihi': takim.kayit_tarihi.strftime('%Y-%m-%d %H:%M'),
         }
-        
-        # Maksimum 4 oyuncu olacağını bildiğimiz için döngüyle ekliyoruz
-        for i, oyuncu in enumerate(oyuncular, start=1):
+        for i, oyuncu in enumerate(takim.oyuncular.all(), start=1):
             satir[f'Oyuncu {i} Ad'] = oyuncu.ad
             satir[f'Oyuncu {i} Soyad'] = oyuncu.soyad
             satir[f'Oyuncu {i} TC'] = oyuncu.tc_no
-            
         veri_listesi.append(satir)
-        
-    # Pandas ile DataFrame oluşturup Excel'e çeviriyoruz
+
     df = pd.DataFrame(veri_listesi)
-    
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=basketbol_kayitlari.xlsx'
-    
-    # Excel dosyasını yazıyoruz
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Basketbol')
-        
     return response
 
 
 @admin.action(description="Seçili Futbol Takımlarını Excel'e Aktar")
 def futbol_excel_aktar(modeladmin, request, queryset):
     veri_listesi = []
-    
-    for takim in queryset:
-        oyuncular = takim.oyuncular.all()
-        
+    for takim in queryset.select_related('kaptan').prefetch_related('oyuncular'):
         satir = {
             'Takım Adı': takim.takim_adi,
             'Kaptan Kullanıcı Adı': takim.kaptan.username,
@@ -62,62 +46,81 @@ def futbol_excel_aktar(modeladmin, request, queryset):
             'İletişim Telefonu': takim.telefon,
             'Kayıt Tarihi': takim.kayit_tarihi.strftime('%Y-%m-%d %H:%M'),
         }
-        
-        # Futbolda 8 oyuncu olduğu için 8'e kadar dönüyoruz
-        for i, oyuncu in enumerate(oyuncular, start=1):
+        for i, oyuncu in enumerate(takim.oyuncular.all(), start=1):
             satir[f'Oyuncu {i} Ad'] = oyuncu.ad
             satir[f'Oyuncu {i} Soyad'] = oyuncu.soyad
             satir[f'Oyuncu {i} TC'] = oyuncu.tc_no
-            
         veri_listesi.append(satir)
-        
+
     df = pd.DataFrame(veri_listesi)
-    
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=futbol_kayitlari.xlsx'
-    
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Futbol')
-        
     return response
 
-# -----------------------------------------------------------------------------
-# OYUNCU SATIRİÇİ (INLINE) GÖRÜNÜMLERİ
-# -----------------------------------------------------------------------------
-# Takımlara tıkladığında altlarında oyuncuların listelenmesini sağlar
 
 class BasketbolOyuncuInline(admin.TabularInline):
     model = BasketbolOyuncu
-    extra = 4  # Varsayılan olarak 4 boş satır getirir
-    max_num = 4  # Maksimum 4 oyuncu eklenebilir
+    extra = 0
+    max_num = 4
+
 
 class FutbolOyuncuInline(admin.TabularInline):
     model = FutbolOyuncu
-    extra = 8  # Varsayılan olarak 8 boş satır getirir
-    max_num = 8  # Maksimum 8 oyuncu eklenebilir
+    extra = 0
+    max_num = 8
 
-# -----------------------------------------------------------------------------
-# MODEL REGİSTRASYONLARI
-# -----------------------------------------------------------------------------
 
 @admin.register(Duyuru)
 class DuyuruAdmin(admin.ModelAdmin):
     list_display = ('baslik', 'yayinlanma_tarihi', 'aktif')
     list_filter = ('aktif', 'yayinlanma_tarihi')
     search_fields = ('baslik', 'icerik')
+    list_editable = ('aktif',)
+    date_hierarchy = 'yayinlanma_tarihi'
+    ordering = ('-yayinlanma_tarihi',)
 
 
 @admin.register(BasketbolTakimi)
 class BasketbolTakimiAdmin(admin.ModelAdmin):
-    list_display = ('takim_adi', 'kaptan', 'telefon', 'kayit_tarihi')
-    search_fields = ('takim_adi', 'telefon', 'kaptan__username')
+    list_display = ('takim_adi', 'kaptan', 'telefon', 'oyuncu_sayisi', 'kayit_tarihi')
+    search_fields = ('takim_adi', 'telefon', 'kaptan__username', 'kaptan__email')
+    list_filter = ('kayit_tarihi',)
+    date_hierarchy = 'kayit_tarihi'
     inlines = [BasketbolOyuncuInline]
-    actions = [basketbol_excel_aktar]  # Excel butonumuzu bağlıyoruz
+    actions = [basketbol_excel_aktar]
+    readonly_fields = ('kayit_tarihi',)
+
+    @admin.display(description='Oyuncu')
+    def oyuncu_sayisi(self, obj):
+        return obj.oyuncular.count()
 
 
 @admin.register(FutbolTakimi)
 class FutbolTakimiAdmin(admin.ModelAdmin):
-    list_display = ('takim_adi', 'kaptan', 'telefon', 'kayit_tarihi')
-    search_fields = ('takim_adi', 'telefon', 'kaptan__username')
+    list_display = ('takim_adi', 'kaptan', 'telefon', 'oyuncu_sayisi', 'kayit_tarihi')
+    search_fields = ('takim_adi', 'telefon', 'kaptan__username', 'kaptan__email')
+    list_filter = ('kayit_tarihi',)
+    date_hierarchy = 'kayit_tarihi'
     inlines = [FutbolOyuncuInline]
-    actions = [futbol_excel_aktar]  
+    actions = [futbol_excel_aktar]
+    readonly_fields = ('kayit_tarihi',)
+
+    @admin.display(description='Oyuncu')
+    def oyuncu_sayisi(self, obj):
+        return obj.oyuncular.count()
+
+
+@admin.register(BasketbolOyuncu)
+class BasketbolOyuncuAdmin(admin.ModelAdmin):
+    list_display = ('ad', 'soyad', 'tc_no', 'takim')
+    search_fields = ('ad', 'soyad', 'tc_no', 'takim__takim_adi')
+    list_filter = ('takim',)
+
+
+@admin.register(FutbolOyuncu)
+class FutbolOyuncuAdmin(admin.ModelAdmin):
+    list_display = ('ad', 'soyad', 'tc_no', 'takim')
+    search_fields = ('ad', 'soyad', 'tc_no', 'takim__takim_adi')
+    list_filter = ('takim',)

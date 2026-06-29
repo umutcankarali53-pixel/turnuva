@@ -17,16 +17,33 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _env_list(name, default=''):
+    raw = os.environ.get(name, default)
+    return [item.strip() for item in raw.split(',') if item.strip()]
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--jh8z3&8ad5lzptfv!sbzx(=rfeh27r#ue4b-p_x2va$)39#8f'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure--jh8z3&8ad5lzptfv!sbzx(=rfeh27r#ue4b-p_x2va$)39#8f',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = _env_list('ALLOWED_HOSTS', '127.0.0.1,localhost')
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+CSRF_TRUSTED_ORIGINS = _env_list('CSRF_TRUSTED_ORIGINS')
+if RENDER_EXTERNAL_HOSTNAME:
+    origin = f'https://{RENDER_EXTERNAL_HOSTNAME}'
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
 
 
 # Application definition
@@ -48,6 +65,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'turnuva.context_processors.site_ayarlari',
             ],
         },
     },
@@ -110,9 +129,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'tr-tr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Istanbul'
 
 USE_I18N = True
 
@@ -123,15 +142,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    BASE_DIR / 'turnuva' / 'static',
+]
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LANGUAGE_CODE = 'tr-tr'
-
-TIME_ZONE = 'Europe/Istanbul'
+SITE_AYARLARI = {
+    'site_adi': 'Turnuva Kayıt Sistemi',
+    'site_aciklama': 'Basketbol ve futbol branşlarında düzenlenen turnuvaya online kayıt olun. Takımınızı oluşturun ve yarışmaya katılın.',
+    'turnuva_adi': '2026 Spor Turnuvası',
+    'turnuva_tarihi_js': 'Aug 15, 2026 10:00:00',
+    'turnuva_tarihi_gosterim': '15 Ağustos 2026',
+    'turnuva_saati': '10:00',
+    'konum_adi': 'Eminönü Meydanı',
+    'iletisim_email': 'destek@turnuva.com',
+    'maps_embed_url': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.650499611684!2d28.97699661541384!3d41.01166697929949!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cab9ec5fa54041%3A0x6b8bc134fbf147d3!2sEmin%C3%B6n%C3%BC%20Meydan%C4%B1!5e0!3m2!1str!2str!4v1680000000000!5m2!1str!2str',
+}
 
 # Allauth Ayarları
 SITE_ID = 1
@@ -142,11 +176,10 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = 'profil'  # Giriş yapınca doğrudan profile atsın
 ACCOUNT_LOGOUT_REDIRECT_URL = 'ana_sayfa'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['username*', 'email*', 'password1*', 'password2*']
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True       # Bilgiler benzersizse onay ekranını tamamen atlasın
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

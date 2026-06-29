@@ -1,0 +1,30 @@
+<footer class="site-footer py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-5">
+                <h5>{{ site.site_adi|default:"Turnuva Kayit Sistemi" }}</h5>
+                <p class="small pe-md-4">{{ site.site_aciklama|default:"Basketbol ve futbol turnuvasina online kayit olun." }}</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Hizli Erisim</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'ana_sayfa' %}" class="footer-link">Ana Sayfa</a></li>
+                    <li><a href="{% url 'duyurular' %}" class="footer-link">Duyurular</a></li>
+                    {% if not user.is_authenticated %}
+                    <li><a href="{% url 'kayit_ol' %}" class="footer-link">Kayit Ol</a></li>
+                    <li><a href="{% url 'giris_yap' %}" class="footer-link">Giris Yap</a></li>
+                    {% else %}
+                    <li><a href="{% url 'profil' %}" class="footer-link">Profilim</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5>Iletisim</h5>
+                <a href="mailto:{{ site.iletisim_email|default:'destek@turnuva.com' }}" class="footer-contact">{{ site.iletisim_email|default:"destek@turnuva.com" }}</a>
+            </div>
+        </div>
+        <div class="footer-bottom text-center mt-4 pt-3">
+            <small>&copy; {% now "Y" %} {{ site.site_adi|default:"Turnuva Kayit Sistemi" }}</small>
+        </div>
+    </div>
+</footer>

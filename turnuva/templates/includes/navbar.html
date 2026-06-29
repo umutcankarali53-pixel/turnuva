@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg site-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'ana_sayfa' %}">
+            <i class="bi bi-trophy-fill me-2 text-accent"></i>{{ site.site_adi|default:"Turnuva Kayit Sistemi" }}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+                <li class="nav-item"><a class="nav-link" href="{% url 'ana_sayfa' %}">Ana Sayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'duyurular' %}">Duyurular</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'profil' %}">Profilim</a></li>
+                {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">Yonetim</a></li>{% endif %}
+                <li class="nav-item"><a class="btn btn-sm btn-outline-light ms-lg-2" href="{% url 'cikis_yap' %}">Cikis</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'giris_yap' %}">Giris</a></li>
+                <li class="nav-item"><a class="btn btn-sm btn-accent ms-lg-2" href="{% url 'kayit_ol' %}">Kayit Ol</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
