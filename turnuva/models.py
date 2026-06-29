@@ -3,6 +3,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from cryptography.fernet import Fernet
+from django.conf import settings
+import os
 
 class Duyuru(models.Model):
     """Admin panelinden eklenecek ve ana sayfada popup/bildirim olarak görünecek duyurular"""
@@ -41,7 +44,36 @@ class BasketbolOyuncu(models.Model):
     ad = models.CharField(max_length=50, verbose_name="Ad")
     soyad = models.CharField(max_length=50, verbose_name="Soyad")
     # unique=True sayesinde bir TC, BasketbolOyuncu tablosunda sadece BİR kez var olabilir!
-    tc_no = models.CharField(max_length=11, unique=True, verbose_name="TC Kimlik No")
+    tc_no = models.CharField(max_length=255, verbose_name="TC Kimlik No")
+
+    def save(self, *args, **kwargs):
+        if self.tc_no and not self.tc_no.startswith('gAAAAA'):
+            self.tc_no = self._encrypt(self.tc_no)
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def _encrypt(value):
+        key = os.environ.get('ENCRYPTION_KEY') or getattr(settings, 'ENCRYPTION_KEY', None)
+        if not key:
+            key = Fernet.generate_key()
+            if os.environ.get('DJANGO_SETTINGS_MODULE'):
+                os.environ['ENCRYPTION_KEY'] = key.decode()
+        f = Fernet(key if isinstance(key, bytes) else key.encode())
+        return f.encrypt(value.encode()).decode()
+
+    @staticmethod
+    def _decrypt(value):
+        key = os.environ.get('ENCRYPTION_KEY') or getattr(settings, 'ENCRYPTION_KEY', None)
+        if not key:
+            return value
+        f = Fernet(key if isinstance(key, bytes) else key.encode())
+        try:
+            return f.decrypt(value.encode()).decode()
+        except Exception:
+            return value
+
+    def get_tc_no(self):
+        return self._decrypt(self.tc_no)
 
     class Meta:
         verbose_name = "Basketbol Oyuncusu"
@@ -72,7 +104,36 @@ class FutbolOyuncu(models.Model):
     ad = models.CharField(max_length=50, verbose_name="Ad")
     soyad = models.CharField(max_length=50, verbose_name="Soyad")
     # unique=True sayesinde bir TC, FutbolOyuncu tablosunda sadece BİR kez var olabilir!
-    tc_no = models.CharField(max_length=11, unique=True, verbose_name="TC Kimlik No")
+    tc_no = models.CharField(max_length=255, verbose_name="TC Kimlik No")
+
+    def save(self, *args, **kwargs):
+        if self.tc_no and not self.tc_no.startswith('gAAAAA'):
+            self.tc_no = self._encrypt(self.tc_no)
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def _encrypt(value):
+        key = os.environ.get('ENCRYPTION_KEY') or getattr(settings, 'ENCRYPTION_KEY', None)
+        if not key:
+            key = Fernet.generate_key()
+            if os.environ.get('DJANGO_SETTINGS_MODULE'):
+                os.environ['ENCRYPTION_KEY'] = key.decode()
+        f = Fernet(key if isinstance(key, bytes) else key.encode())
+        return f.encrypt(value.encode()).decode()
+
+    @staticmethod
+    def _decrypt(value):
+        key = os.environ.get('ENCRYPTION_KEY') or getattr(settings, 'ENCRYPTION_KEY', None)
+        if not key:
+            return value
+        f = Fernet(key if isinstance(key, bytes) else key.encode())
+        try:
+            return f.decrypt(value.encode()).decode()
+        except Exception:
+            return value
+
+    def get_tc_no(self):
+        return self._decrypt(self.tc_no)
 
     class Meta:
         verbose_name = "Futbol Oyuncusu"

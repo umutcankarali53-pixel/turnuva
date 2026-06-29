@@ -13,8 +13,13 @@
         <div class="col-lg-10">
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <form method="POST">
+                    <form method="POST" id="takimForm">
                         {% csrf_token %}
+                        <div class="loading-overlay" id="formLoading" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Yükleniyor...</span>
+                            </div>
+                        </div>
 
                         <h5 class="form-section-title">
                             <i class="bi bi-people me-2"></i>1. Takım Bilgileri
@@ -61,8 +66,9 @@
                         </div>
 
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg py-3">
-                                <i class="bi bi-check2-circle me-2"></i>Bilgileri Kaydet
+                            <button type="submit" class="btn btn-primary btn-lg py-3" id="submitBtn">
+                                <span class="btn-text"><i class="bi bi-check2-circle me-2"></i>Bilgileri Kaydet</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                             </button>
                         </div>
                     </form>

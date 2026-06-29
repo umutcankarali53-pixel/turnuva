@@ -18,18 +18,16 @@ def telefon_dogrula(value):
         raise ValidationError('Geçerli bir Türkiye cep telefonu numarası giriniz. (Örn: 05551234567)')
 
 
-FORM_CONTROL = {'class': 'form-control'}
+# ---------------- ORTAK FORM SINIFLARI ----------------
 
-
-# ---------------- BASKETBOL FORMLARI ----------------
-
-class BasketbolTakimiForm(forms.ModelForm):
+class BaseTakimForm(forms.ModelForm):
+    """Basketbol ve Futbol takımları için ortak form"""
+    
     class Meta:
-        model = BasketbolTakimi
         fields = ['takim_adi', 'telefon']
         widgets = {
-            'takim_adi': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Takım adınız'}),
-            'telefon': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': '0555 123 45 67'}),
+            'takim_adi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Takım adınız'}),
+            'telefon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0555 123 45 67'}),
         }
 
     def clean_telefon(self):
@@ -38,20 +36,33 @@ class BasketbolTakimiForm(forms.ModelForm):
         return telefon
 
 
-class BasketbolOyuncuForm(forms.ModelForm):
+class BaseOyuncuForm(forms.ModelForm):
+    """Basketbol ve Futbol oyuncuları için ortak form"""
+    
     class Meta:
-        model = BasketbolOyuncu
         fields = ['ad', 'soyad', 'tc_no']
         widgets = {
-            'ad': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Ad'}),
-            'soyad': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Soyad'}),
-            'tc_no': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': '11 haneli TC', 'maxlength': '11', 'inputmode': 'numeric'}),
+            'ad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ad'}),
+            'soyad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Soyad'}),
+            'tc_no': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '11 haneli TC', 'maxlength': '11', 'inputmode': 'numeric'}),
         }
 
     def clean_tc_no(self):
         tc = self.cleaned_data['tc_no']
         tc_dogrula(tc)
         return tc
+
+
+# ---------------- BASKETBOL FORMLARI ----------------
+
+class BasketbolTakimiForm(BaseTakimForm):
+    class Meta(BaseTakimForm.Meta):
+        model = BasketbolTakimi
+
+
+class BasketbolOyuncuForm(BaseOyuncuForm):
+    class Meta(BaseOyuncuForm.Meta):
+        model = BasketbolOyuncu
 
 
 BasketbolOyuncuFormSet = inlineformset_factory(
@@ -65,35 +76,14 @@ BasketbolOyuncuFormSet = inlineformset_factory(
 
 # ---------------- FUTBOL FORMLARI ----------------
 
-class FutbolTakimiForm(forms.ModelForm):
-    class Meta:
+class FutbolTakimiForm(BaseTakimForm):
+    class Meta(BaseTakimForm.Meta):
         model = FutbolTakimi
-        fields = ['takim_adi', 'telefon']
-        widgets = {
-            'takim_adi': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Takım adınız'}),
-            'telefon': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': '0555 123 45 67'}),
-        }
-
-    def clean_telefon(self):
-        telefon = self.cleaned_data['telefon']
-        telefon_dogrula(telefon)
-        return telefon
 
 
-class FutbolOyuncuForm(forms.ModelForm):
-    class Meta:
+class FutbolOyuncuForm(BaseOyuncuForm):
+    class Meta(BaseOyuncuForm.Meta):
         model = FutbolOyuncu
-        fields = ['ad', 'soyad', 'tc_no']
-        widgets = {
-            'ad': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Ad'}),
-            'soyad': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Soyad'}),
-            'tc_no': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': '11 haneli TC', 'maxlength': '11', 'inputmode': 'numeric'}),
-        }
-
-    def clean_tc_no(self):
-        tc = self.cleaned_data['tc_no']
-        tc_dogrula(tc)
-        return tc
 
 
 FutbolOyuncuFormSet = inlineformset_factory(
@@ -105,12 +95,14 @@ FutbolOyuncuFormSet = inlineformset_factory(
 )
 
 
+# ---------------- DUYURU FORMU ----------------
+
 class DuyuruForm(forms.ModelForm):
     class Meta:
         model = Duyuru
         fields = ['baslik', 'icerik', 'aktif']
         widgets = {
-            'baslik': forms.TextInput(attrs={**FORM_CONTROL, 'placeholder': 'Duyuru başlığı'}),
-            'icerik': forms.Textarea(attrs={**FORM_CONTROL, 'rows': 4, 'placeholder': 'Duyuru içeriği'}),
+            'baslik': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Duyuru başlığı'}),
+            'icerik': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Duyuru içeriği'}),
             'aktif': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

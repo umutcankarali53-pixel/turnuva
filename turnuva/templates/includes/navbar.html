@@ -22,3 +22,39 @@
         </div>
     </div>
 </nav>
+
+<!-- Breadcrumb Navigation -->
+{% if request.path != '/' %}
+<nav aria-label="breadcrumb" class="bg-light py-2 border-bottom">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'ana_sayfa' %}"><i class="bi bi-house-door me-1"></i>Ana Sayfa</a></li>
+            {% if 'basketbol-yonetim' in request.path %}
+            <li class="breadcrumb-item"><a href="{% url 'profil' %}">Profil</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Basketbol Takımı</li>
+            {% elif 'futbol-yonetim' in request.path %}
+            <li class="breadcrumb-item"><a href="{% url 'profil' %}">Profil</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Futbol Takımı</li>
+            {% elif 'yonetim' in request.path %}
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Yönetim</a></li>
+            {% if 'basketbol' in request.path and 'sil' not in request.path and 'duzenle' not in request.path %}
+            <li class="breadcrumb-item"><a href="{% url 'admin_basketbol_listesi' %}">Basketbol</a></li>
+            {% elif 'futbol' in request.path and 'sil' not in request.path and 'duzenle' not in request.path %}
+            <li class="breadcrumb-item"><a href="{% url 'admin_futbol_listesi' %}">Futbol</a></li>
+            {% elif 'duyurular' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Duyurular</li>
+            {% elif 'kullanicilar' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Kullanıcılar</li>
+            {% endif %}
+            {% elif 'profil' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Profilim</li>
+            {% elif 'duyurular' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Duyurular</li>
+            {% elif 'kayit' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Kayıt Ol</li>
+            {% elif 'giris' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Giriş Yap</li>
+            {% endif %}
+        </ol>
+    </div>
+</nav>
